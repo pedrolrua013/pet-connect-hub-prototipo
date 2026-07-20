@@ -1,0 +1,1352 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pet Connect Hub — Protótipo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --primary:#FF6B4A;
+    --primary-dark:#E14F30;
+    --primary-light:#FFE4DB;
+    --secondary:#12A181;
+    --secondary-dark:#0C7F66;
+    --secondary-light:#DCF5EE;
+    --dark:#1F2430;
+    --gray-700:#4B5264;
+    --gray-500:#8891A5;
+    --gray-300:#D8DCE5;
+    --gray-100:#F3F5F8;
+    --bg:#FBFAF8;
+    --card:#FFFFFF;
+    --star:#FFB020;
+    --radius:16px;
+    --shadow:0 2px 8px rgba(31,36,48,0.06), 0 1px 2px rgba(31,36,48,0.04);
+    --shadow-lg:0 12px 32px rgba(31,36,48,0.12);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Inter',sans-serif;
+    background:var(--bg);
+    color:var(--dark);
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,h4,.brand{font-family:'Poppins',sans-serif;}
+  a{text-decoration:none;color:inherit;}
+  button{font-family:inherit;cursor:pointer;border:none;}
+  ul{list-style:none;margin:0;padding:0;}
+  img{max-width:100%;display:block;}
+
+  .app{max-width:1180px;margin:0 auto;min-height:100vh;background:var(--bg);box-shadow:0 0 60px rgba(0,0,0,0.06);}
+
+  .topnav{
+    position:sticky;top:0;z-index:100;background:rgba(255,255,255,0.95);backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--gray-300);display:flex;align-items:center;justify-content:space-between;
+    padding:14px 28px;gap:20px;
+  }
+  .brand{display:flex;align-items:center;gap:8px;font-weight:800;font-size:19px;color:var(--dark);white-space:nowrap;}
+  .brand .paw-badge{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--primary),var(--secondary));display:flex;align-items:center;justify-content:center;font-size:17px;}
+  .tabs{display:flex;gap:4px;background:var(--gray-100);padding:4px;border-radius:12px;}
+  .tab-group{display:flex;gap:4px;}
+  .tab-btn{padding:9px 16px;border-radius:9px;font-size:13.5px;font-weight:600;color:var(--gray-700);background:transparent;transition:all .15s ease;display:flex;align-items:center;gap:6px;white-space:nowrap;}
+  .tab-btn svg{width:15px;height:15px;flex-shrink:0;}
+  .tab-btn.active{background:var(--dark);color:#fff;box-shadow:var(--shadow);}
+  .nav-actions{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+  .btn-ghost{padding:9px 14px;font-size:13.5px;font-weight:600;color:var(--gray-700);border-radius:9px;}
+  .btn-ghost:hover{background:var(--gray-100);}
+  .avatar-mini{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#FFD3C4,#FFB199);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--primary-dark);font-size:13px;}
+  @media (max-width:980px){ .tabs{display:none;} }
+
+  .mode-bar{display:flex;justify-content:center;padding:16px 24px 0;}
+  .mode-switch{display:inline-flex;background:var(--gray-100);padding:4px;border-radius:100px;gap:4px;}
+  .mode-btn{padding:11px 24px;border-radius:100px;font-weight:700;font-size:13.5px;color:var(--gray-700);background:transparent;display:flex;align-items:center;gap:7px;}
+  .mode-btn.active{background:var(--dark);color:#fff;box-shadow:var(--shadow);}
+  .mode-caption{text-align:center;font-size:12px;color:var(--gray-500);padding:8px 24px 0;}
+
+  .bottom-tabs{display:none;}
+  @media (max-width:980px){
+    .bottom-tabs{display:flex;position:fixed;bottom:0;left:0;right:0;z-index:100;background:#fff;border-top:1px solid var(--gray-300);padding:8px 6px 10px;justify-content:space-around;max-width:1180px;margin:0 auto;}
+    .bottom-tabs .tab-group-m{display:flex;flex:1;justify-content:space-around;}
+    .bottom-tabs .tab-btn{flex-direction:column;gap:3px;font-size:10.5px;padding:6px 8px;border-radius:8px;}
+    .bottom-tabs .tab-btn.active{background:var(--primary-light);color:var(--primary-dark);}
+    .app{padding-bottom:64px;}
+  }
+  body.mode-consumidor .tabs-profissional{display:none;}
+  body.mode-profissional .tabs-consumidor{display:none;}
+  body.mode-consumidor .tabs-m-profissional{display:none !important;}
+  body.mode-profissional .tabs-m-consumidor{display:none !important;}
+
+  .screen{display:none;animation:fadeIn .35s ease;}
+  .screen.active{display:block;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 22px;border-radius:12px;font-weight:700;font-size:14.5px;transition:transform .12s ease, box-shadow .12s ease;}
+  .btn-primary{background:var(--primary);color:#fff;box-shadow:0 8px 20px rgba(255,107,74,0.35);}
+  .btn-primary:hover{transform:translateY(-1px);box-shadow:0 10px 24px rgba(255,107,74,0.42);}
+  .btn-outline{background:#fff;color:var(--dark);border:1.5px solid var(--gray-300);}
+  .btn-outline:hover{border-color:var(--dark);}
+  .btn-secondary{background:var(--secondary);color:#fff;}
+  .btn-sm{padding:9px 16px;font-size:13px;border-radius:9px;}
+  .btn-block{width:100%;}
+  .btn:disabled{opacity:.5;cursor:default;transform:none !important;}
+
+  .hero{position:relative;overflow:hidden;margin:20px 24px 0;border-radius:24px;background:linear-gradient(120deg,#FF7A5A 0%,#FF6B4A 38%,#12A181 100%);padding:52px 44px;color:#fff;}
+  .hero::before{content:"";position:absolute;right:-60px;top:-60px;width:280px;height:280px;background:rgba(255,255,255,0.12);border-radius:50%;}
+  .hero::after{content:"";position:absolute;right:120px;bottom:-90px;width:180px;height:180px;background:rgba(255,255,255,0.10);border-radius:50%;}
+  .hero-flex{display:flex;gap:36px;align-items:center;position:relative;z-index:2;}
+  .hero-text{flex:1;min-width:280px;}
+  .hero-tag{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.18);padding:6px 14px;border-radius:100px;font-size:12.5px;font-weight:600;margin-bottom:18px;}
+  .hero h1{font-size:36px;line-height:1.15;margin:0 0 14px;font-weight:800;}
+  .hero p.sub{font-size:15px;max-width:480px;opacity:0.92;margin:0 0 26px;line-height:1.6;}
+  .search-card{position:relative;z-index:2;background:#fff;border-radius:16px;padding:10px;display:flex;gap:8px;max-width:640px;box-shadow:var(--shadow-lg);flex-wrap:wrap;}
+  .search-field{flex:1;min-width:150px;display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;color:var(--dark);}
+  .search-field svg{width:18px;height:18px;color:var(--gray-500);flex-shrink:0;}
+  .search-field select,.search-field input{border:none;outline:none;font-family:inherit;font-size:14px;width:100%;background:transparent;color:var(--dark);font-weight:500;}
+  .search-divider{width:1px;background:var(--gray-300);margin:6px 0;}
+  .search-card .btn-primary{white-space:nowrap;}
+  .hero-media{flex-shrink:0;width:250px;position:relative;display:none;}
+  @media (min-width:860px){ .hero-media{display:block;} }
+  .hero-media .main-photo{width:100%;height:230px;border-radius:20px;object-fit:cover;box-shadow:var(--shadow-lg);border:4px solid rgba(255,255,255,0.5);}
+  .hero-media .badge-photo{position:absolute;left:-22px;bottom:-18px;width:78px;height:78px;border-radius:50%;object-fit:cover;border:4px solid #fff;box-shadow:var(--shadow-lg);}
+  .hero-media .badge-tag{position:absolute;right:-10px;top:-14px;background:#fff;color:var(--secondary-dark);font-size:11px;font-weight:800;padding:6px 12px;border-radius:100px;box-shadow:var(--shadow-lg);display:flex;align-items:center;gap:4px;}
+
+  .stats-row{display:flex;gap:0;margin:-28px 44px 0;position:relative;z-index:3;background:#fff;border-radius:18px;box-shadow:var(--shadow-lg);padding:22px 10px;flex-wrap:wrap;}
+  .stat{flex:1;min-width:140px;text-align:center;padding:6px 10px;border-right:1px solid var(--gray-100);}
+  .stat:last-child{border-right:none;}
+  .stat .num{font-family:'Poppins',sans-serif;font-weight:800;font-size:22px;color:var(--dark);}
+  .stat .lbl{font-size:12px;color:var(--gray-500);font-weight:500;margin-top:2px;}
+
+  .section{padding:48px 44px 8px;}
+  .section-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:8px;}
+  .section-head h2{font-size:22px;margin:0;font-weight:700;}
+  .section-head .see-all{font-size:13.5px;font-weight:700;color:var(--primary);}
+
+  .cat-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;}
+  @media (max-width:900px){.cat-grid{grid-template-columns:repeat(3,1fr);}}
+  .cat-card{background:var(--card);border:1px solid var(--gray-300);border-radius:16px;padding:20px 12px;text-align:center;transition:all .15s ease;}
+  .cat-card:hover{border-color:var(--primary);transform:translateY(-3px);box-shadow:var(--shadow);}
+  .cat-icon{width:52px;height:52px;border-radius:16px;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:21px;background-size:cover;background-position:center;overflow:hidden;position:relative;}
+  .cat-icon.photo-icon::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,0.15));}
+  .cat-card span{font-size:12.5px;font-weight:600;color:var(--gray-700);}
+
+  .pro-scroll{display:flex;gap:16px;overflow-x:auto;padding-bottom:6px;}
+  .pro-card{min-width:250px;max-width:250px;background:var(--card);border:1px solid var(--gray-300);border-radius:18px;overflow:hidden;transition:all .15s ease;flex-shrink:0;}
+  .pro-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-3px);}
+  .pro-cover{height:96px;position:relative;background-size:cover;background-position:center;}
+  .pro-avatar{width:58px;height:58px;border-radius:50%;border:3px solid #fff;position:absolute;left:16px;bottom:-29px;font-weight:700;color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;}
+  .pro-body{padding:36px 16px 16px;}
+  .pro-body h4{margin:0 0 2px;font-size:15px;}
+  .pro-cat{font-size:12px;color:var(--secondary-dark);font-weight:600;margin-bottom:6px;}
+  .stars{display:inline-flex;align-items:center;gap:3px;font-size:12.5px;color:var(--gray-700);font-weight:600;}
+  .pro-price{font-size:12.5px;color:var(--gray-500);margin:8px 0 12px;}
+  .pro-price b{color:var(--dark);font-size:14px;}
+  .badge{display:inline-flex;align-items:center;gap:4px;background:var(--secondary-light);color:var(--secondary-dark);font-size:10.5px;font-weight:700;padding:3px 8px;border-radius:100px;}
+  .badge.warn{background:#FFF3D6;color:#A66A00;}
+
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+  @media (max-width:800px){.steps{grid-template-columns:1fr;}}
+  .step-card{background:var(--card);border:1px solid var(--gray-300);border-radius:18px;padding:26px;}
+  .step-num{width:34px;height:34px;border-radius:10px;background:var(--dark);color:#fff;font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;}
+  .step-card h4{margin:0 0 6px;font-size:15.5px;}
+  .step-card p{margin:0;font-size:13px;color:var(--gray-500);line-height:1.55;}
+
+  .cta-banner{margin:44px 44px 0;padding:30px 40px;border-radius:20px;background:var(--dark);color:#fff;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;}
+  .cta-banner h3{margin:0 0 4px;font-size:19px;}
+  .cta-banner p{margin:0;font-size:13.5px;color:var(--gray-300);}
+  .cta-thumb{width:120px;height:80px;border-radius:14px;object-fit:cover;flex-shrink:0;box-shadow:var(--shadow-lg);}
+  .cta-left{display:flex;align-items:center;gap:18px;}
+
+  .footer{padding:36px 44px 40px;color:var(--gray-500);font-size:12.5px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;border-top:1px solid var(--gray-300);margin-top:36px;}
+
+  .search-header{padding:24px 44px 0;}
+  .search-header h2{font-size:22px;margin:0 0 4px;}
+  .search-header p.muted{color:var(--gray-500);font-size:13.5px;margin:0 0 18px;}
+  .filter-bar{display:flex;gap:10px;flex-wrap:wrap;padding:0 44px 20px;}
+  .chip{display:flex;align-items:center;gap:6px;padding:9px 14px;border-radius:100px;background:#fff;border:1.5px solid var(--gray-300);font-size:13px;font-weight:600;color:var(--gray-700);}
+  .chip.active{background:var(--dark);color:#fff;border-color:var(--dark);}
+  .chip svg{width:13px;height:13px;}
+
+  .results-layout{display:grid;grid-template-columns:260px 1fr;gap:24px;padding:0 44px 50px;align-items:start;}
+  @media (max-width:900px){.results-layout{grid-template-columns:1fr;}}
+  .filters-panel{background:var(--card);border:1px solid var(--gray-300);border-radius:16px;padding:20px;position:sticky;top:78px;}
+  .filters-panel h4{font-size:13.5px;margin:0 0 14px;}
+  .fgroup{margin-bottom:20px;}
+  .fgroup:last-child{margin-bottom:0;}
+  .fgroup .flabel{font-size:12px;font-weight:700;color:var(--gray-700);margin-bottom:10px;text-transform:uppercase;letter-spacing:.03em;}
+  .frow{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--gray-700);margin-bottom:9px;}
+  .frow input{accent-color:var(--primary);width:15px;height:15px;}
+  .range-track{height:5px;background:var(--gray-300);border-radius:100px;position:relative;margin:14px 4px 6px;}
+  .range-fill{position:absolute;left:0;top:0;bottom:0;width:62%;background:var(--primary);border-radius:100px;}
+  .range-thumb{position:absolute;top:50%;left:62%;width:15px;height:15px;background:#fff;border:3px solid var(--primary);border-radius:50%;transform:translate(-50%,-50%);}
+  .range-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--gray-500);}
+  .info-tag{font-size:11px;color:var(--gray-500);display:flex;align-items:center;gap:5px;margin-top:6px;}
+
+  .results-col{display:flex;flex-direction:column;gap:14px;}
+  .results-top{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--gray-500);margin-bottom:2px;}
+  .sort-select{border:1.5px solid var(--gray-300);border-radius:9px;padding:7px 10px;font-size:12.5px;font-weight:600;color:var(--gray-700);background:#fff;}
+
+  .result-card{display:flex;gap:16px;background:var(--card);border:1px solid var(--gray-300);border-radius:16px;padding:16px;transition:all .15s ease;}
+  .result-card:hover{box-shadow:var(--shadow);border-color:#fff;}
+  .result-photo{width:92px;height:92px;border-radius:14px;flex-shrink:0;position:relative;background-size:cover;background-position:center;}
+  .result-photo .avatar-fallback{width:100%;height:100%;border-radius:14px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:26px;}
+  .result-photo .online-dot{position:absolute;bottom:3px;right:3px;width:13px;height:13px;background:#3BC17A;border:2.5px solid #fff;border-radius:50%;}
+  .result-info{flex:1;min-width:0;}
+  .result-info .rtop{display:flex;justify-content:space-between;gap:8px;}
+  .result-info h4{margin:0;font-size:15.5px;}
+  .result-info .rcat{font-size:12px;color:var(--secondary-dark);font-weight:600;margin:2px 0 6px;}
+  .result-tags{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0;}
+  .tag{background:var(--gray-100);color:var(--gray-700);font-size:11px;font-weight:600;padding:4px 9px;border-radius:100px;}
+  .result-meta{display:flex;align-items:center;gap:14px;font-size:12.5px;color:var(--gray-500);margin-top:8px;flex-wrap:wrap;}
+  .result-right{text-align:right;flex-shrink:0;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-end;gap:8px;}
+  .result-right .price{font-size:12px;color:var(--gray-500);}
+  .result-right .price b{font-size:16px;color:var(--dark);display:block;}
+
+  .map-mock{background:linear-gradient(135deg,var(--secondary-light),#fff);border:1px solid var(--gray-300);border-radius:16px;height:210px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;margin-bottom:14px;}
+  .map-mock .pin{position:absolute;font-size:20px;}
+
+  .profile-cover{height:170px;border-radius:0 0 24px 24px;position:relative;background-size:cover;background-position:center;}
+  .profile-cover::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(18,26,36,0.15),rgba(18,26,36,0.35));border-radius:0 0 24px 24px;}
+  .back-btn{position:absolute;top:18px;left:24px;background:rgba(255,255,255,0.92);width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow);z-index:2;}
+  .back-btn svg{width:17px;height:17px;}
+  .profile-header{padding:0 44px;margin-top:-46px;display:flex;gap:20px;align-items:flex-end;flex-wrap:wrap;position:relative;z-index:2;}
+  .profile-avatar{width:110px;height:110px;border-radius:22px;border:4px solid #fff;box-shadow:var(--shadow-lg);background:linear-gradient(135deg,#FFB199,var(--primary));display:flex;align-items:center;justify-content:center;font-size:38px;font-weight:800;color:#fff;flex-shrink:0;}
+  .profile-title{padding-bottom:8px;flex:1;min-width:220px;}
+  .profile-title .name-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .profile-title h2{font-size:22px;margin:0;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,0.3);}
+  .profile-title .cat{color:#fff;font-weight:600;font-size:13.5px;margin:4px 0 8px;opacity:.95;text-shadow:0 2px 8px rgba(0,0,0,0.3);}
+  .profile-title .stars{color:#fff;text-shadow:0 2px 8px rgba(0,0,0,0.3);}
+  .profile-actions{display:flex;gap:10px;padding-bottom:8px;flex-shrink:0;}
+
+  .profile-body{display:grid;grid-template-columns:1fr 300px;gap:28px;padding:26px 44px 50px;align-items:start;}
+  @media (max-width:900px){.profile-body{grid-template-columns:1fr;}}
+  .card-block{background:var(--card);border:1px solid var(--gray-300);border-radius:16px;padding:22px;margin-bottom:20px;}
+  .card-block h3{font-size:15.5px;margin:0 0 14px;}
+  .card-block p.bio{font-size:13.5px;color:var(--gray-700);line-height:1.7;margin:0 0 14px;}
+  .pill-row{display:flex;gap:8px;flex-wrap:wrap;}
+  .pill{background:var(--gray-100);padding:6px 12px;border-radius:100px;font-size:12px;font-weight:600;color:var(--gray-700);}
+
+  .service-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--gray-100);}
+  .service-row:last-child{border-bottom:none;}
+  .service-row .sname{font-size:13.5px;font-weight:600;}
+  .service-row .sdur{font-size:12px;color:var(--gray-500);}
+  .service-row .sprice{font-weight:700;font-size:14.5px;}
+
+  .review-item{padding:14px 0;border-bottom:1px solid var(--gray-100);}
+  .review-item:last-child{border-bottom:none;}
+  .review-top{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+  .review-avatar{width:32px;height:32px;border-radius:50%;background:var(--gray-300);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--gray-700);}
+  .review-name{font-size:13px;font-weight:700;}
+  .review-date{font-size:11px;color:var(--gray-500);}
+  .review-text{font-size:13px;color:var(--gray-700);line-height:1.6;margin:0;}
+
+  .avail-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:6px;}
+  .avail-day{text-align:center;}
+  .avail-day .dname{font-size:10.5px;color:var(--gray-500);margin-bottom:6px;font-weight:600;}
+  .avail-slot{background:var(--gray-100);border-radius:8px;padding:7px 2px;font-size:10.5px;font-weight:700;color:var(--gray-300);}
+  .avail-slot.free{background:var(--secondary-light);color:var(--secondary-dark);}
+  .avail-slot.toggle-avail{cursor:pointer;user-select:none;transition:all .12s ease;}
+  .avail-slot.toggle-avail:hover{transform:scale(1.05);}
+
+  .side-summary .row{display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--gray-100);}
+  .side-summary .row:last-child{border-bottom:none;}
+  .side-summary .row b{font-weight:700;}
+  .rating-big{text-align:center;padding:6px 0 16px;}
+  .rating-big .num{font-size:38px;font-weight:800;font-family:'Poppins',sans-serif;}
+  .rating-big .stars{justify-content:center;margin:6px 0;}
+  .rating-big .count{font-size:12px;color:var(--gray-500);}
+
+  .dash-header{padding:28px 44px 6px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;}
+  .dash-header h2{margin:0;font-size:22px;}
+  .dash-header p{margin:2px 0 0;color:var(--gray-500);font-size:13.5px;}
+  .pet-chip{display:flex;align-items:center;gap:8px;background:#fff;border:1.5px solid var(--gray-300);padding:6px 14px 6px 6px;border-radius:100px;font-size:13px;font-weight:600;}
+  .pet-chip .pdot{width:30px;height:30px;border-radius:50%;overflow:hidden;flex-shrink:0;}
+  .pet-chip .pdot img{width:100%;height:100%;object-fit:cover;}
+  .pets-row{display:flex;gap:10px;padding:16px 44px 0;flex-wrap:wrap;}
+  .add-pet{border:1.5px dashed var(--gray-300);color:var(--gray-500);}
+
+  .subnav-pills{display:flex;gap:8px;padding:16px 44px 0;flex-wrap:wrap;}
+  .subnav-pill{padding:10px 18px;border-radius:100px;background:#fff;border:1.5px solid var(--gray-300);font-size:13px;font-weight:700;color:var(--gray-700);display:flex;align-items:center;gap:6px;}
+  .subnav-pill.active{background:var(--dark);color:#fff;border-color:var(--dark);}
+  .subscreen{display:none;}
+  .subscreen.active{display:block;}
+
+  .dash-body{display:grid;grid-template-columns:1fr 280px;gap:24px;padding:24px 44px 50px;align-items:start;}
+  @media (max-width:900px){.dash-body{grid-template-columns:1fr;}}
+  .booking-card{display:flex;gap:16px;background:var(--card);border:1px solid var(--gray-300);border-radius:16px;padding:18px;margin-bottom:14px;align-items:center;}
+  .booking-photo{width:64px;height:64px;border-radius:14px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:22px;background-size:cover;background-position:center;overflow:hidden;}
+  .booking-photo img{width:100%;height:100%;object-fit:cover;}
+  .booking-info{flex:1;min-width:0;}
+  .booking-info h4{margin:0 0 3px;font-size:14.5px;}
+  .booking-info .bmeta{font-size:12.5px;color:var(--gray-500);}
+  .status-pill{font-size:11px;font-weight:700;padding:5px 11px;border-radius:100px;white-space:nowrap;}
+  .status-pill.confirmed{background:var(--secondary-light);color:var(--secondary-dark);}
+  .status-pill.done{background:var(--gray-100);color:var(--gray-500);}
+  .booking-actions{display:flex;gap:8px;flex-shrink:0;}
+  .icon-btn{width:36px;height:36px;border-radius:9px;border:1.5px solid var(--gray-300);background:#fff;display:flex;align-items:center;justify-content:center;}
+
+  .stat-card{background:var(--card);border:1px solid var(--gray-300);border-radius:16px;padding:18px;margin-bottom:14px;}
+  .stat-card .n{font-family:'Poppins',sans-serif;font-weight:800;font-size:24px;}
+  .stat-card .l{font-size:12px;color:var(--gray-500);margin-top:2px;}
+
+  /* Carteira Digital */
+  .pet-wallet-head{display:flex;align-items:center;gap:16px;margin-bottom:20px;}
+  .pet-wallet-head img{width:72px;height:72px;border-radius:20px;object-fit:cover;box-shadow:var(--shadow);}
+  .pet-wallet-head h3{margin:0 0 3px;font-size:18px;}
+  .pet-wallet-head p{margin:0;font-size:12.5px;color:var(--gray-500);}
+  .vax-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:22px;}
+  .vax-chip{padding:10px 14px;border-radius:12px;background:var(--secondary-light);color:var(--secondary-dark);font-size:12.5px;font-weight:700;display:flex;align-items:center;gap:6px;}
+  .vax-chip.warn{background:#FFF3D6;color:#A66A00;}
+  .timeline{position:relative;padding-left:6px;}
+  .tl-item{display:flex;gap:14px;padding-bottom:20px;position:relative;}
+  .tl-item:last-child{padding-bottom:0;}
+  .tl-item::before{content:"";position:absolute;left:17px;top:36px;bottom:-4px;width:2px;background:var(--gray-300);}
+  .tl-item:last-child::before{display:none;}
+  .tl-icon{width:36px;height:36px;border-radius:50%;background:var(--gray-100);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;z-index:1;}
+  .tl-body{flex:1;background:var(--gray-100);border-radius:12px;padding:12px 14px;}
+  .tl-body .tl-date{font-size:11px;color:var(--gray-500);font-weight:700;margin-bottom:3px;}
+  .tl-body .tl-title{font-size:13.5px;font-weight:700;margin-bottom:3px;}
+  .tl-body .tl-desc{font-size:12.5px;color:var(--gray-700);line-height:1.5;}
+  .sync-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;color:var(--secondary-dark);margin-top:6px;}
+
+  /* Loja Pet */
+  .product-row{display:flex;gap:14px;align-items:center;background:var(--card);border:1px solid var(--gray-300);border-radius:14px;padding:14px;margin-bottom:12px;}
+  .product-icon{width:48px;height:48px;border-radius:12px;background:var(--gray-100);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+  .product-info{flex:1;min-width:0;}
+  .product-info h4{margin:0 0 3px;font-size:14px;}
+  .product-info .pmeta{font-size:11.5px;color:var(--gray-500);}
+  .product-price{font-weight:800;font-size:15px;flex-shrink:0;}
+  .sub-banner{background:linear-gradient(120deg,var(--secondary),#0d8f74);color:#fff;border-radius:16px;padding:20px 24px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-top:20px;}
+  .sub-banner h4{margin:0 0 4px;font-size:15.5px;}
+  .sub-banner p{margin:0;font-size:12.5px;opacity:.9;}
+
+  /* Viagem pet friendly */
+  .travel-banner{position:relative;border-radius:18px;overflow:hidden;height:150px;margin-bottom:20px;}
+  .travel-banner img{width:100%;height:100%;object-fit:cover;}
+  .travel-banner .overlay{position:absolute;inset:0;background:linear-gradient(90deg,rgba(18,26,36,0.75),rgba(18,26,36,0.15));display:flex;flex-direction:column;justify-content:center;padding:0 28px;color:#fff;}
+  .travel-banner .overlay h3{margin:0 0 4px;font-size:19px;}
+  .travel-banner .overlay p{margin:0;font-size:12.5px;opacity:.9;}
+  .travel-search{display:flex;gap:8px;background:#fff;border:1px solid var(--gray-300);border-radius:14px;padding:8px;margin-bottom:20px;flex-wrap:wrap;}
+  .travel-search input{flex:1;min-width:140px;border:none;outline:none;padding:9px 12px;font-family:inherit;font-size:13.5px;}
+  .travel-card{display:flex;gap:14px;align-items:center;background:var(--card);border:1px solid var(--gray-300);border-radius:14px;padding:14px;margin-bottom:12px;}
+  .travel-icon{width:46px;height:46px;border-radius:12px;background:var(--primary-light);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+  .travel-info{flex:1;min-width:0;}
+  .travel-info h4{margin:0 0 3px;font-size:14px;}
+  .travel-info .tmeta{font-size:11.5px;color:var(--gray-500);}
+  .travel-note{background:var(--primary-light);border-radius:12px;padding:12px 16px;font-size:12.5px;color:var(--primary-dark);font-weight:600;margin-top:14px;}
+
+  /* Cadastro parceiro */
+  .progress-steps{padding:0 44px 8px;display:flex;gap:10px;flex-wrap:wrap;}
+  .pstep{padding:9px 16px;border-radius:100px;background:var(--gray-100);color:var(--gray-500);font-size:12.5px;font-weight:700;}
+  .pstep.done{background:var(--secondary-light);color:var(--secondary-dark);}
+  .pstep.active{background:var(--dark);color:#fff;}
+
+  .ptype-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;}
+  .ptype-btn{flex:1;min-width:140px;padding:14px;border-radius:14px;border:1.5px solid var(--gray-300);background:#fff;text-align:center;font-size:12.5px;font-weight:700;color:var(--gray-700);}
+  .ptype-btn .picon{font-size:20px;display:block;margin-bottom:6px;}
+  .ptype-btn.active{border-color:var(--primary);background:var(--primary-light);color:var(--primary-dark);}
+  .doc-set{display:none;}
+  .doc-set.active{display:flex;flex-wrap:wrap;gap:8px;}
+
+  .online-toggle{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+  .online-toggle .lbl{font-weight:700;font-size:13.5px;}
+  .online-toggle .lbl.on{color:var(--secondary-dark);}
+  .online-toggle .lbl.off{color:var(--gray-500);}
+
+  .request-card{background:var(--card);border:1.5px solid var(--gray-300);border-radius:16px;padding:18px;margin-bottom:14px;transition:all .2s ease;}
+  .request-card.declined{opacity:.4;}
+  .request-card.declined .request-actions{pointer-events:none;}
+  .request-card.accepted{border-color:var(--secondary);background:var(--secondary-light);}
+  .request-top{display:flex;align-items:center;gap:14px;}
+  .request-top h4{margin:0 0 3px;font-size:14.5px;}
+  .request-top .bmeta{font-size:12.5px;color:var(--gray-500);}
+  .request-price{margin-left:auto;font-weight:800;font-size:17px;flex-shrink:0;}
+  .request-timer{font-size:12px;color:var(--primary-dark);font-weight:700;margin:12px 0;}
+  .request-actions{display:flex;gap:10px;}
+  .request-actions .btn{flex:1;}
+  .request-status-msg{display:none;font-size:13px;font-weight:700;color:var(--secondary-dark);margin-top:10px;}
+  .request-card.accepted .request-status-msg{display:block;}
+  .request-card.accepted .request-actions{display:none;}
+
+  .chart-bars{display:flex;align-items:flex-end;gap:12px;height:150px;padding-top:14px;}
+  .bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;height:100%;justify-content:flex-end;}
+  .bar-col .bval{font-size:10.5px;font-weight:700;color:var(--dark);}
+  .bar{width:100%;border-radius:8px 8px 3px 3px;background:linear-gradient(180deg,var(--primary),var(--primary-dark));}
+  .bar-col .blabel{font-size:10.5px;color:var(--gray-500);font-weight:600;}
+
+  .payout-card{background:linear-gradient(120deg,var(--dark),#2C3446);color:#fff;border-radius:16px;padding:20px 22px;margin-bottom:16px;}
+  .payout-row{display:flex;justify-content:space-between;font-size:13px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.12);}
+  .payout-row:last-child{border-bottom:none;font-weight:800;font-size:15px;padding-top:10px;}
+  .payout-row span:first-child{color:rgba(255,255,255,0.7);}
+  .rank-card{display:flex;align-items:center;gap:14px;background:var(--card);border:1px solid var(--gray-300);border-radius:16px;padding:16px 18px;margin-bottom:16px;}
+  .rank-num{font-family:'Poppins',sans-serif;font-weight:800;font-size:26px;color:var(--primary);flex-shrink:0;}
+  .boost-card{background:linear-gradient(120deg,#FF7A5A,var(--primary));color:#fff;border-radius:16px;padding:18px 20px;margin-bottom:16px;}
+  .boost-card h4{margin:0 0 4px;font-size:15px;}
+  .boost-card p{margin:0 0 12px;font-size:12px;opacity:.92;}
+</style>
+</head>
+<body class="mode-consumidor">
+<div class="app">
+
+  <nav class="topnav">
+    <div class="brand"><span class="paw-badge">🐾</span> Pet Connect Hub</div>
+    <div class="tabs" id="tabs-desktop">
+      <div class="tab-group tabs-consumidor">
+        <button class="tab-btn active" data-tab="home">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
+          Início
+        </button>
+        <button class="tab-btn" data-tab="busca">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+          Buscar
+        </button>
+        <button class="tab-btn" data-tab="perfil">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 5-6 8-6s6.5 2 8 6"/></svg>
+          Ver Perfil
+        </button>
+        <button class="tab-btn" data-tab="agenda">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+          Minha Conta
+        </button>
+      </div>
+      <div class="tab-group tabs-profissional">
+        <button class="tab-btn" data-tab="cadastro-pro">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+          Cadastro
+        </button>
+        <button class="tab-btn" data-tab="solicitacoes">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg>
+          Solicitações
+        </button>
+        <button class="tab-btn" data-tab="painel-pro">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg>
+          Painel
+        </button>
+      </div>
+    </div>
+    <div class="nav-actions">
+      <a class="btn-ghost" href="#" data-mode-goto="profissional:cadastro-pro">Sou parceiro</a>
+      <div class="avatar-mini">PR</div>
+    </div>
+  </nav>
+
+  <div class="mode-bar">
+    <div class="mode-switch">
+      <button class="mode-btn active" data-mode="consumidor">🧑 Jornada do Tutor</button>
+      <button class="mode-btn" data-mode="profissional">🐾 Jornada do Parceiro</button>
+    </div>
+  </div>
+  <p class="mode-caption" id="mode-caption">Você está vendo a jornada de quem busca e contrata um serviço pet.</p>
+
+  <!-- ===== SCREEN: HOME ===== -->
+  <section class="screen active" id="home">
+    <div class="hero">
+      <div class="hero-flex">
+        <div class="hero-text">
+          <span class="hero-tag">🐾 +2.400 parceiros verificados</span>
+          <h1>Conecte-se ao profissional pet ideal, perto de você</h1>
+          <p class="sub">Veterinários, banho &amp; tosa, pet sitters, passeadores, pet shops e hotéis pet friendly — avaliados por quem já confiou. Compare, agende e pague pelo app.</p>
+          <div class="search-card">
+            <div class="search-field">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+              <select>
+                <option>Qual serviço você procura?</option>
+                <option>Veterinário</option>
+                <option>Banho &amp; Tosa</option>
+                <option>Pet Sitter</option>
+                <option>Passeador</option>
+                <option>Adestrador</option>
+                <option>Creche</option>
+              </select>
+            </div>
+            <div class="search-divider"></div>
+            <div class="search-field">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s7-7.4 7-12a7 7 0 10-14 0c0 4.6 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg>
+              <input type="text" placeholder="Seu bairro ou cidade" value="Vila Mariana, SP">
+            </div>
+            <button class="btn btn-primary" data-goto="busca">Buscar</button>
+          </div>
+        </div>
+        <div class="hero-media">
+          <img class="main-photo" src="https://images.pexels.com/photos/7876348/pexels-photo-7876348.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Tutora abraçando seu cão">
+          <img class="badge-photo" src="https://images.pexels.com/photos/7468978/pexels-photo-7468978.jpeg?auto=compress&cs=tinysrgb&w=300" alt="Veterinário examinando cão">
+          <span class="badge-tag">✓ Verificado</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat"><div class="num">2.400+</div><div class="lbl">parceiros ativos</div></div>
+      <div class="stat"><div class="num">98%</div><div class="lbl">avaliações positivas</div></div>
+      <div class="stat"><div class="num">35</div><div class="lbl">cidades atendidas</div></div>
+      <div class="stat"><div class="num">~15 min</div><div class="lbl">tempo médio de resposta</div></div>
+    </div>
+
+    <div class="section">
+      <div class="section-head"><h2>O que você precisa hoje?</h2></div>
+      <div class="cat-grid">
+        <a class="cat-card" data-goto="busca"><div class="cat-icon photo-icon" style="background-image:url('https://images.pexels.com/photos/7468978/pexels-photo-7468978.jpeg?auto=compress&cs=tinysrgb&w=200');"></div><span>Veterinário</span></a>
+        <a class="cat-card" data-goto="busca"><div class="cat-icon photo-icon" style="background-image:url('https://images.pexels.com/photos/1436139/pexels-photo-1436139.jpeg?auto=compress&cs=tinysrgb&w=200');"></div><span>Banho &amp; Tosa</span></a>
+        <a class="cat-card" data-goto="busca"><div class="cat-icon" style="background:#FFF3D6;">🏠</div><span>Pet Sitter</span></a>
+        <a class="cat-card" data-goto="busca"><div class="cat-icon photo-icon" style="background-image:url('https://images.pexels.com/photos/16180680/pexels-photo-16180680.jpeg?auto=compress&cs=tinysrgb&w=200');"></div><span>Passeador</span></a>
+        <a class="cat-card" data-goto="busca"><div class="cat-icon photo-icon" style="background-image:url('https://images.pexels.com/photos/10013055/pexels-photo-10013055.jpeg?auto=compress&cs=tinysrgb&w=200');"></div><span>Adestrador</span></a>
+        <a class="cat-card" data-goto="busca"><div class="cat-icon photo-icon" style="background-image:url('https://images.pexels.com/photos/11087477/pexels-photo-11087477.jpeg?auto=compress&cs=tinysrgb&w=200');"></div><span>Creche</span></a>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-head">
+        <h2>Parceiros em destaque perto de você</h2>
+        <a class="see-all" data-goto="busca">Ver todos →</a>
+      </div>
+      <div class="pro-scroll">
+        <div class="pro-card" data-goto="perfil">
+          <div class="pro-cover" style="background-image:url('https://images.pexels.com/photos/7468978/pexels-photo-7468978.jpeg?auto=compress&cs=tinysrgb&w=400');">
+            <div class="pro-avatar" style="background:var(--primary-dark);">CM</div>
+          </div>
+          <div class="pro-body">
+            <h4>Dra. Carla Mendes</h4>
+            <div class="pro-cat">Veterinária • Clínica geral</div>
+            <span class="stars">★★★★★ 4.9 (218)</span>
+            <div class="pro-price">A partir de <b>R$ 90</b> • 1.2 km</div>
+            <span class="badge">✓ Verificado</span>
+          </div>
+        </div>
+        <div class="pro-card" data-goto="perfil">
+          <div class="pro-cover" style="background-image:url('https://images.pexels.com/photos/30810890/pexels-photo-30810890.jpeg?auto=compress&cs=tinysrgb&w=400');">
+            <div class="pro-avatar" style="background:var(--secondary-dark);">RS</div>
+          </div>
+          <div class="pro-body">
+            <h4>Rafael Souza</h4>
+            <div class="pro-cat">Passeador • Cães de todos os portes</div>
+            <span class="stars">★★★★★ 4.8 (156)</span>
+            <div class="pro-price">A partir de <b>R$ 35</b> • 0.8 km</div>
+            <span class="badge">✓ Verificado</span>
+          </div>
+        </div>
+        <div class="pro-card" data-goto="perfil">
+          <div class="pro-cover" style="background-image:url('https://images.pexels.com/photos/1436139/pexels-photo-1436139.jpeg?auto=compress&cs=tinysrgb&w=400');">
+            <div class="pro-avatar" style="background:#C97A00;">JT</div>
+          </div>
+          <div class="pro-body">
+            <h4>Juliana Torres</h4>
+            <div class="pro-cat">Banho &amp; Tosa • A domicílio</div>
+            <span class="stars">★★★★★ 5.0 (89)</span>
+            <div class="pro-price">A partir de <b>R$ 60</b> • 2.1 km</div>
+            <span class="badge">✓ Verificado</span>
+          </div>
+        </div>
+        <div class="pro-card" data-goto="perfil">
+          <div class="pro-cover" style="background-image:url('https://images.pexels.com/photos/10013055/pexels-photo-10013055.jpeg?auto=compress&cs=tinysrgb&w=400');">
+            <div class="pro-avatar" style="background:#5C3FD9;">PA</div>
+          </div>
+          <div class="pro-body">
+            <h4>Pedro Andrade</h4>
+            <div class="pro-cat">Adestrador • Comportamental</div>
+            <span class="stars">★★★★☆ 4.7 (64)</span>
+            <div class="pro-price">A partir de <b>R$ 120</b> • 3.4 km</div>
+            <span class="badge">✓ Verificado</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-head"><h2>Como funciona</h2></div>
+      <div class="steps">
+        <div class="step-card"><div class="step-num">1</div><h4>Busque e compare</h4><p>Filtre por categoria, distância (geolocalização), preço e avaliação — nota calculada com base no Google e nos tutores da plataforma.</p></div>
+        <div class="step-card"><div class="step-num">2</div><h4>Agende com segurança</h4><p>Veja a agenda em tempo real, converse antes de fechar e pague pelo app com garantia.</p></div>
+        <div class="step-card"><div class="step-num">3</div><h4>Tudo fica registrado</h4><p>Exame, receita e vacina entram sozinhos na carteira digital do seu pet — sem digitação manual.</p></div>
+      </div>
+    </div>
+
+    <div class="cta-banner">
+      <div class="cta-left">
+        <img class="cta-thumb" src="https://images.pexels.com/photos/20092332/pexels-photo-20092332.jpeg?auto=compress&cs=tinysrgb&w=300" alt="Profissional gerenciando negócio pelo notebook">
+        <div><h3>É veterinário, pet shop, hotel ou profissional pet?</h3><p>Cadastre-se gratuitamente e comece a receber demanda na sua região.</p></div>
+      </div>
+      <button class="btn btn-secondary" data-mode-goto="profissional:cadastro-pro">Quero ser parceiro</button>
+    </div>
+
+    <div class="footer">
+      <span>© 2026 Pet Connect Hub — Protótipo acadêmico ESPM</span>
+      <span>Feito com 🐾 para conectar tutores e parceiros pet</span>
+    </div>
+  </section>
+
+  <!-- ===== SCREEN: BUSCA ===== -->
+  <section class="screen" id="busca">
+    <div class="search-header">
+      <h2>Veterinário perto de você</h2>
+      <p class="muted">32 parceiros encontrados em Vila Mariana, SP · usando sua geolocalização</p>
+    </div>
+    <div class="filter-bar">
+      <div class="chip active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M6 12h12M10 18h4"/></svg>Todos os filtros</div>
+      <div class="chip">Categoria: Veterinário</div>
+      <div class="chip">Avaliação 4.5+</div>
+      <div class="chip">Disponível hoje</div>
+      <div class="chip">📍 Até 5 km</div>
+    </div>
+
+    <div class="results-layout">
+      <aside class="filters-panel">
+        <h4>Filtrar resultados</h4>
+        <div class="fgroup">
+          <div class="flabel">Categoria</div>
+          <div class="frow"><input type="checkbox" checked> Veterinário</div>
+          <div class="frow"><input type="checkbox"> Banho &amp; Tosa</div>
+          <div class="frow"><input type="checkbox"> Pet Sitter</div>
+          <div class="frow"><input type="checkbox"> Passeador</div>
+          <div class="frow"><input type="checkbox"> Adestrador</div>
+        </div>
+        <div class="fgroup">
+          <div class="flabel">Preço (por atendimento)</div>
+          <div class="range-track"><div class="range-fill"></div><div class="range-thumb"></div></div>
+          <div class="range-labels"><span>R$ 30</span><span>R$ 250</span></div>
+        </div>
+        <div class="fgroup">
+          <div class="flabel">Avaliação mínima</div>
+          <div class="frow"><input type="checkbox" checked> 4.5 ★ ou mais</div>
+          <div class="frow"><input type="checkbox"> 4.0 ★ ou mais</div>
+          <div class="info-tag">ⓘ Nota combina avaliações do Google + tutores do app</div>
+        </div>
+        <div class="fgroup">
+          <div class="flabel">Disponibilidade</div>
+          <div class="frow"><input type="checkbox" checked> Disponível hoje</div>
+          <div class="frow"><input type="checkbox"> Atende fim de semana</div>
+          <div class="frow"><input type="checkbox"> Atendimento domiciliar</div>
+        </div>
+      </aside>
+
+      <div class="results-col">
+        <div class="map-mock">
+          <span class="pin" style="left:30%;top:35%;">📍</span>
+          <span class="pin" style="left:55%;top:55%;">📍</span>
+          <span class="pin" style="left:70%;top:28%;">📍</span>
+          <span class="pin" style="left:42%;top:70%;">📍</span>
+          <span style="font-size:12px;color:var(--secondary-dark);font-weight:600;">mapa ilustrativo baseado na sua geolocalização</span>
+        </div>
+        <div class="results-top">
+          <span>32 resultados</span>
+          <select class="sort-select"><option>Ordenar: Relevância</option><option>Menor preço</option><option>Melhor avaliação</option><option>Mais próximo</option></select>
+        </div>
+
+        <div class="result-card" data-goto="perfil">
+          <div class="result-photo" style="background-image:url('https://images.pexels.com/photos/7468978/pexels-photo-7468978.jpeg?auto=compress&cs=tinysrgb&w=200');"><div class="online-dot"></div></div>
+          <div class="result-info">
+            <div class="rtop"><h4>Dra. Carla Mendes</h4></div>
+            <div class="rcat">Veterinária • Clínica geral e felinos</div>
+            <span class="stars">★★★★★ 4.9 (218 avaliações)</span>
+            <div class="result-tags"><span class="tag">Atende em domicílio</span><span class="tag">Aceita PIX</span><span class="tag">Emergência</span></div>
+            <div class="result-meta">
+              <span class="meta-item">📍 1.2 km</span>
+              <span class="meta-item">⏱ Responde em 10 min</span>
+            </div>
+          </div>
+          <div class="result-right">
+            <div class="price">a partir de<b>R$ 90</b></div>
+            <button class="btn btn-outline btn-sm">Ver perfil</button>
+          </div>
+        </div>
+
+        <div class="result-card" data-goto="perfil">
+          <div class="result-photo" style="background-image:url('https://images.pexels.com/photos/6234624/pexels-photo-6234624.jpeg?auto=compress&cs=tinysrgb&w=200');"><div class="online-dot"></div></div>
+          <div class="result-info">
+            <div class="rtop"><h4>Dr. Lucas Barbosa</h4></div>
+            <div class="rcat">Veterinário • Ortopedia e cirurgia</div>
+            <span class="stars">★★★★★ 4.8 (142 avaliações)</span>
+            <div class="result-tags"><span class="tag">Clínica própria</span><span class="tag">Convênios pet</span></div>
+            <div class="result-meta">
+              <span class="meta-item">📍 2.4 km</span>
+              <span class="meta-item">⏱ Responde em 25 min</span>
+            </div>
+          </div>
+          <div class="result-right">
+            <div class="price">a partir de<b>R$ 130</b></div>
+            <button class="btn btn-outline btn-sm">Ver perfil</button>
+          </div>
+        </div>
+
+        <div class="result-card" data-goto="perfil">
+          <div class="result-photo"><div class="avatar-fallback" style="background:linear-gradient(135deg,#FFC26F,#FF9F45);">AV</div></div>
+          <div class="result-info">
+            <div class="rtop"><h4>Dra. Amanda Vieira</h4></div>
+            <div class="rcat">Veterinária • Dermatologia animal</div>
+            <span class="stars">★★★★☆ 4.6 (77 avaliações)</span>
+            <div class="result-tags"><span class="tag">Teleconsulta</span><span class="tag">Aceita PIX</span></div>
+            <div class="result-meta">
+              <span class="meta-item">📍 3.1 km</span>
+              <span class="meta-item">⏱ Responde em 1h</span>
+            </div>
+          </div>
+          <div class="result-right">
+            <div class="price">a partir de<b>R$ 100</b></div>
+            <button class="btn btn-outline btn-sm">Ver perfil</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SCREEN: PERFIL ===== -->
+  <section class="screen" id="perfil">
+    <div class="profile-cover" style="background-image:url('https://images.pexels.com/photos/7468978/pexels-photo-7468978.jpeg?auto=compress&cs=tinysrgb&w=1200');">
+      <div class="back-btn" data-goto="busca"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M15 18l-6-6 6-6"/></svg></div>
+    </div>
+    <div class="profile-header">
+      <div class="profile-avatar">CM</div>
+      <div class="profile-title">
+        <div class="name-row">
+          <h2>Dra. Carla Mendes</h2>
+          <span class="badge">✓ Verificada</span>
+        </div>
+        <div class="cat">Veterinária • Clínica geral e felinos • CRMV-SP 34521</div>
+        <span class="stars">★★★★★ 4.9 · 218 avaliações · Vila Mariana, SP</span>
+      </div>
+      <div class="profile-actions">
+        <button class="btn btn-outline">💬 Mensagem</button>
+        <button class="btn btn-primary" data-goto="agenda">Agendar atendimento</button>
+      </div>
+    </div>
+
+    <div class="profile-body">
+      <div class="main-col">
+        <div class="card-block">
+          <h3>Sobre</h3>
+          <p class="bio">Veterinária há 11 anos, especializada em clínica geral e medicina felina preventiva. Atendo em consultório e a domicílio, com foco em diagnóstico precoce e acompanhamento contínuo da saúde dos pets. Parceira de laboratórios e rede de exames de imagem.</p>
+          <div class="pill-row">
+            <span class="pill">Clínica geral</span>
+            <span class="pill">Medicina felina</span>
+            <span class="pill">Check-up preventivo</span>
+            <span class="pill">Atendimento domiciliar</span>
+            <span class="pill">Teleorientação</span>
+          </div>
+        </div>
+
+        <div class="card-block">
+          <h3>Serviços &amp; preços</h3>
+          <div class="service-row"><div><div class="sname">Consulta clínica geral</div><div class="sdur">40 min</div></div><div class="sprice">R$ 90</div></div>
+          <div class="service-row"><div><div class="sname">Check-up preventivo completo</div><div class="sdur">60 min</div></div><div class="sprice">R$ 160</div></div>
+          <div class="service-row"><div><div class="sname">Atendimento domiciliar</div><div class="sdur">50 min</div></div><div class="sprice">R$ 180</div></div>
+          <div class="service-row"><div><div class="sname">Teleorientação (retorno)</div><div class="sdur">20 min</div></div><div class="sprice">R$ 50</div></div>
+        </div>
+
+        <div class="card-block">
+          <h3>Disponibilidade — próxima semana</h3>
+          <div class="avail-grid">
+            <div class="avail-day"><div class="dname">SEG</div><div class="avail-slot free">09:00</div></div>
+            <div class="avail-day"><div class="dname">TER</div><div class="avail-slot">—</div></div>
+            <div class="avail-day"><div class="dname">QUA</div><div class="avail-slot free">14:00</div></div>
+            <div class="avail-day"><div class="dname">QUI</div><div class="avail-slot free">10:30</div></div>
+            <div class="avail-day"><div class="dname">SEX</div><div class="avail-slot free">16:00</div></div>
+            <div class="avail-day"><div class="dname">SÁB</div><div class="avail-slot free">09:30</div></div>
+            <div class="avail-day"><div class="dname">DOM</div><div class="avail-slot">—</div></div>
+          </div>
+        </div>
+
+        <div class="card-block">
+          <h3>Avaliações (218)</h3>
+          <div class="review-item">
+            <div class="review-top"><div class="review-avatar">JF</div><div><div class="review-name">Juliana Ferreira</div><div class="review-date">há 3 dias · ★★★★★</div></div></div>
+            <p class="review-text">Atendimento excelente, muito atenciosa com meu gato. Explicou tudo com calma e o preço é justo.</p>
+          </div>
+          <div class="review-item">
+            <div class="review-top"><div class="review-avatar">MO</div><div><div class="review-name">Marcos Oliveira</div><div class="review-date">há 1 semana · ★★★★★</div></div></div>
+            <p class="review-text">Veio até minha casa rapidinho, foi muito profissional. Recomendo demais.</p>
+          </div>
+          <div class="review-item">
+            <div class="review-top"><div class="review-avatar">BT</div><div><div class="review-name">Beatriz Tavares</div><div class="review-date">há 2 semanas · ★★★★☆</div></div></div>
+            <p class="review-text">Boa consulta, só demorou um pouco pra confirmar o horário pelo chat.</p>
+          </div>
+        </div>
+      </div>
+
+      <aside>
+        <div class="card-block side-summary">
+          <div class="rating-big">
+            <div class="num">4.9</div>
+            <div class="stars">★★★★★</div>
+            <div class="count">baseado em 218 avaliações (Google + app)</div>
+          </div>
+          <div class="row"><span>Tempo de resposta</span><b>~10 min</b></div>
+          <div class="row"><span>Taxa de aceite</span><b>96%</b></div>
+          <div class="row"><span>Atendimentos concluídos</span><b>540+</b></div>
+          <div class="row"><span>No app desde</span><b>2022</b></div>
+        </div>
+        <button class="btn btn-primary btn-block" data-goto="agenda">Agendar com Dra. Carla</button>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ===== SCREEN: MINHA CONTA (Tutor hub) ===== -->
+  <section class="screen" id="agenda">
+    <div class="dash-header">
+      <div>
+        <h2>Olá, Pedro 👋</h2>
+        <p>Sua conta, seus pets e tudo que o Pet Connect Hub guarda por você</p>
+      </div>
+      <button class="btn btn-primary btn-sm" data-goto="busca">+ Novo agendamento</button>
+    </div>
+
+    <div class="pets-row">
+      <div class="pet-chip"><div class="pdot"><img src="https://images.pexels.com/photos/19143039/pexels-photo-19143039.jpeg?auto=compress&cs=tinysrgb&w=100" alt="Thor"></div> Thor · Cão · SRD</div>
+      <div class="pet-chip"><div class="pdot"><img src="https://images.pexels.com/photos/13473569/pexels-photo-13473569.jpeg?auto=compress&cs=tinysrgb&w=100" alt="Mia"></div> Mia · Gata · Siamês</div>
+      <button class="chip add-pet">+ Adicionar pet</button>
+    </div>
+
+    <div class="subnav-pills">
+      <button class="subnav-pill active" data-subtab="sub-agendamentos">📅 Agendamentos</button>
+      <button class="subnav-pill" data-subtab="sub-carteira">🩺 Carteira Digital</button>
+      <button class="subnav-pill" data-subtab="sub-loja">🛒 Loja Pet</button>
+      <button class="subnav-pill" data-subtab="sub-viagem">✈️ Viagem Pet Friendly</button>
+    </div>
+
+    <!-- Sub: Agendamentos -->
+    <div class="subscreen active" id="sub-agendamentos">
+      <div class="dash-body">
+        <div>
+          <h3 style="font-size:15px;margin:20px 0 14px;">Próximos agendamentos</h3>
+          <div class="booking-card">
+            <div class="booking-photo" style="background-image:url('https://images.pexels.com/photos/7468978/pexels-photo-7468978.jpeg?auto=compress&cs=tinysrgb&w=150');"></div>
+            <div class="booking-info">
+              <h4>Dra. Carla Mendes — Check-up preventivo</h4>
+              <div class="bmeta">Para: Thor · Qui, 23 de julho · 10:30 · R$ 160</div>
+            </div>
+            <span class="status-pill confirmed">Confirmado</span>
+            <div class="booking-actions"><div class="icon-btn">💬</div><div class="icon-btn">⏱</div></div>
+          </div>
+          <div class="booking-card">
+            <div class="booking-photo" style="background-image:url('https://images.pexels.com/photos/30810890/pexels-photo-30810890.jpeg?auto=compress&cs=tinysrgb&w=150');"></div>
+            <div class="booking-info">
+              <h4>Rafael Souza — Passeio (60 min)</h4>
+              <div class="bmeta">Para: Thor · Sex, 24 de julho · 16:00 · R$ 35</div>
+            </div>
+            <span class="status-pill confirmed">Confirmado</span>
+            <div class="booking-actions"><div class="icon-btn">💬</div><div class="icon-btn">⏱</div></div>
+          </div>
+
+          <h3 style="font-size:15px;margin:24px 0 14px;">Histórico</h3>
+          <div class="booking-card">
+            <div class="booking-photo" style="background-image:url('https://images.pexels.com/photos/1436139/pexels-photo-1436139.jpeg?auto=compress&cs=tinysrgb&w=150');"></div>
+            <div class="booking-info">
+              <h4>Juliana Torres — Banho &amp; Tosa</h4>
+              <div class="bmeta">Para: Mia · 12 de julho · concluído · R$ 60</div>
+            </div>
+            <span class="status-pill done">★★★★★ avaliado</span>
+          </div>
+          <div class="booking-card">
+            <div class="booking-photo" style="background-image:url('https://images.pexels.com/photos/6234624/pexels-photo-6234624.jpeg?auto=compress&cs=tinysrgb&w=150');"></div>
+            <div class="booking-info">
+              <h4>Dr. Lucas Barbosa — Consulta</h4>
+              <div class="bmeta">Para: Thor · 2 de julho · concluído · R$ 130</div>
+            </div>
+            <span class="status-pill done">Avaliar →</span>
+          </div>
+        </div>
+        <aside>
+          <div class="stat-card"><div class="n">R$ 1.240</div><div class="l">gasto nos últimos 12 meses</div></div>
+          <div class="stat-card"><div class="n">2</div><div class="l">pets cadastrados</div></div>
+          <div class="stat-card"><div class="n">7</div><div class="l">atendimentos concluídos</div></div>
+          <div class="stat-card"><div class="n">4.9</div><div class="l">nota média dada aos parceiros</div></div>
+        </aside>
+      </div>
+    </div>
+
+    <!-- Sub: Carteira Digital -->
+    <div class="subscreen" id="sub-carteira">
+      <div class="section" style="padding-top:20px;">
+        <div class="card-block">
+          <div class="pet-wallet-head">
+            <img src="https://images.pexels.com/photos/19143039/pexels-photo-19143039.jpeg?auto=compress&cs=tinysrgb&w=150" alt="Thor">
+            <div><h3>Carteira Digital de Thor</h3><p>Cão · SRD · 3 anos · 14 kg · tutor: Pedro</p></div>
+          </div>
+          <div class="vax-row">
+            <span class="vax-chip">✓ V10 em dia — próxima dose 12/2026</span>
+            <span class="vax-chip">✓ Antirrábica em dia</span>
+            <span class="vax-chip warn">⚠ Giárdia vence em 12 dias</span>
+          </div>
+          <h4 style="font-size:14px;margin:0 0 14px;">Histórico automático</h4>
+          <div class="timeline">
+            <div class="tl-item">
+              <div class="tl-icon">🛁</div>
+              <div class="tl-body">
+                <div class="tl-date">12 jul 2026</div>
+                <div class="tl-title">Banho &amp; Tosa — Juliana Torres</div>
+                <div class="tl-desc">Higienização completa e corte de unhas realizados.</div>
+                <div class="sync-badge">⚡ Sincronizado automaticamente pelo parceiro</div>
+              </div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-icon">🩺</div>
+              <div class="tl-body">
+                <div class="tl-date">2 jul 2026</div>
+                <div class="tl-title">Consulta clínica — Dr. Lucas Barbosa</div>
+                <div class="tl-desc">Receita: Cetoconazol 7 dias · Exame: Hemograma completo (anexado).</div>
+                <div class="sync-badge">⚡ Sincronizado automaticamente pelo parceiro</div>
+              </div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-icon">💉</div>
+              <div class="tl-body">
+                <div class="tl-date">15 jun 2026</div>
+                <div class="tl-title">Vacina V10 aplicada — Dra. Carla Mendes</div>
+                <div class="tl-desc">Reforço anual, próxima dose agendada automaticamente.</div>
+                <div class="sync-badge">⚡ Sincronizado automaticamente pelo parceiro</div>
+              </div>
+            </div>
+          </div>
+          <p class="bio" style="margin-top:16px;margin-bottom:0;">Todo atendimento feito por um parceiro Pet Connect Hub entra aqui automaticamente — sem digitação manual. Você recebe lembretes de reforço de vacina, retorno e cuidados preventivos direto no app.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sub: Loja Pet -->
+    <div class="subscreen" id="sub-loja">
+      <div class="section" style="padding-top:20px;">
+        <div class="card-block">
+          <h3>Loja Pet — sugestões para Thor</h3>
+          <p class="bio">Baseado no histórico de compras e nas receitas registradas na carteira digital.</p>
+          <div class="product-row">
+            <div class="product-icon">🍖</div>
+            <div class="product-info"><h4>Ração Premium Adulto 15kg</h4><div class="pmeta">Você compra a cada ~30 dias · última compra há 28 dias</div></div>
+            <div class="product-price">R$ 189,90</div>
+            <button class="btn btn-primary btn-sm">Comprar</button>
+          </div>
+          <div class="product-row">
+            <div class="product-icon">💊</div>
+            <div class="product-info"><h4>Cetoconazol (conforme receita)</h4><div class="pmeta">Prescrito por Dr. Lucas Barbosa em 02/07</div></div>
+            <div class="product-price">R$ 42,00</div>
+            <button class="btn btn-primary btn-sm">Comprar</button>
+          </div>
+          <div class="product-row">
+            <div class="product-icon">🧴</div>
+            <div class="product-info"><h4>Shampoo hipoalergênico</h4><div class="pmeta">Recomendado após o banho de 12/07</div></div>
+            <div class="product-price">R$ 38,00</div>
+            <button class="btn btn-outline btn-sm">Adicionar</button>
+          </div>
+          <div class="product-row">
+            <div class="product-icon">🦴</div>
+            <div class="product-info"><h4>Petisco dental</h4><div class="pmeta">Complementa a saúde bucal</div></div>
+            <div class="product-price">R$ 24,90</div>
+            <button class="btn btn-outline btn-sm">Adicionar</button>
+          </div>
+          <div class="sub-banner">
+            <div><h4>Assinatura Pet Connect+</h4><p>Receba a ração todo mês com 10% de desconto e frete grátis.</p></div>
+            <button class="btn btn-secondary btn-sm" style="background:#fff;color:var(--secondary-dark);">Assinar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sub: Viagem Pet Friendly -->
+    <div class="subscreen" id="sub-viagem">
+      <div class="section" style="padding-top:20px;">
+        <div class="card-block">
+          <div class="travel-banner">
+            <img src="https://images.pexels.com/photos/7863033/pexels-photo-7863033.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Cachorro viajando de carro">
+            <div class="overlay"><h3>Leve Thor com você</h3><p>Hotéis, restaurantes e transporte que aceitam pets no seu destino.</p></div>
+          </div>
+          <div class="travel-search">
+            <input type="text" placeholder="Para onde vocês vão?" value="Campos do Jordão, SP">
+            <input type="text" placeholder="Datas" value="14 a 17 de agosto">
+            <button class="btn btn-primary btn-sm">Buscar</button>
+          </div>
+          <div class="travel-card">
+            <div class="travel-icon">🏨</div>
+            <div class="travel-info"><h4>Pousada Vista Verde</h4><div class="tmeta">🐾 Pet friendly · taxa única de R$ 50 · 4.7 ★</div></div>
+            <button class="btn btn-outline btn-sm">Ver</button>
+          </div>
+          <div class="travel-card">
+            <div class="travel-icon">🍽️</div>
+            <div class="travel-info"><h4>Restaurante Green Garden</h4><div class="tmeta">🐾 Área pet friendly · 4.6 ★</div></div>
+            <button class="btn btn-outline btn-sm">Ver</button>
+          </div>
+          <div class="travel-card">
+            <div class="travel-icon">🚗</div>
+            <div class="travel-info"><h4>Pet Táxi Express</h4><div class="tmeta">🐾 Transporte porta a porta · 4.9 ★</div></div>
+            <button class="btn btn-outline btn-sm">Ver</button>
+          </div>
+          <div class="travel-note">📱 Apresente a carteira digital de Thor no check-in — sem precisar levar papel, mesmo em caso de emergência.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SCREEN: CADASTRO PARCEIRO ===== -->
+  <section class="screen" id="cadastro-pro">
+    <div class="search-header">
+      <h2>Cadastre-se como parceiro</h2>
+      <p class="muted">Leva menos de 5 minutos · seu perfil entra em análise em até 24h</p>
+    </div>
+
+    <div class="progress-steps">
+      <div class="pstep done">✓ 1. Tipo de parceiro</div>
+      <div class="pstep done">✓ 2. Dados e documentos</div>
+      <div class="pstep active">3. Vitrine (serviços &amp; preços)</div>
+      <div class="pstep">4. Disponibilidade</div>
+    </div>
+
+    <div class="section" style="padding-top:14px;">
+      <div class="profile-body" style="grid-template-columns:1fr 300px;padding:0;">
+        <div>
+          <div class="card-block">
+            <h3>Tipo de parceiro</h3>
+            <div class="ptype-row">
+              <button class="ptype-btn" data-ptype="vet"><span class="picon">🩺</span>Veterinário</button>
+              <button class="ptype-btn active" data-ptype="autonomo"><span class="picon">🐕</span>Profissional autônomo</button>
+              <button class="ptype-btn" data-ptype="petshop"><span class="picon">🛍️</span>Pet Shop</button>
+              <button class="ptype-btn" data-ptype="hotel"><span class="picon">🏨</span>Hotel Pet Friendly</button>
+            </div>
+            <div class="info-tag">ⓘ Como você conheceu o Pet Connect Hub? — Indicação de outro parceiro</div>
+          </div>
+
+          <div class="card-block">
+            <h3>Dados pessoais <span class="badge">✓ concluído</span></h3>
+            <div class="pill-row">
+              <span class="pill">👤 Rafael Souza</span>
+              <span class="pill">🐕 Categoria: Passeador</span>
+              <span class="pill">📍 Vila Mariana, SP</span>
+              <span class="pill">📱 (11) 9****-2210</span>
+            </div>
+          </div>
+
+          <div class="card-block">
+            <h3>Documentos para verificação <span class="badge">✓ enviados</span></h3>
+            <div class="doc-set active" data-docs="autonomo">
+              <span class="badge">✓ RG/CPF enviado</span>
+              <span class="badge">✓ Comprovante de endereço</span>
+              <span class="badge warn">⏳ Atestado de antecedentes — em análise</span>
+            </div>
+            <div class="doc-set" data-docs="vet">
+              <span class="badge">✓ RG/CPF enviado</span>
+              <span class="badge warn">⏳ CRMV — em análise</span>
+            </div>
+            <div class="doc-set" data-docs="petshop">
+              <span class="badge">✓ CNPJ enviado</span>
+              <span class="badge warn">⏳ Alvará de funcionamento — em análise</span>
+            </div>
+            <div class="doc-set" data-docs="hotel">
+              <span class="badge">✓ CNPJ enviado</span>
+              <span class="badge warn">⏳ Política de aceitação de pets — em análise</span>
+            </div>
+          </div>
+
+          <div class="card-block">
+            <h3>Vitrine — serviços &amp; preços</h3>
+            <p class="bio" style="margin-bottom:14px;">Monte seu perfil com fotos, serviços, preços e política de aceitação de pets. Isso é o que os tutores veem na busca.</p>
+            <div class="service-row"><div><div class="sname">Passeio 30 min</div><div class="sdur">1 pet</div></div><div class="sprice">R$ 25</div></div>
+            <div class="service-row"><div><div class="sname">Passeio 60 min</div><div class="sdur">até 2 pets</div></div><div class="sprice">R$ 35</div></div>
+            <div class="service-row"><div><div class="sname">Hospedagem diária</div><div class="sdur">na casa do profissional</div></div><div class="sprice">R$ 80</div></div>
+            <button class="btn btn-outline btn-sm" style="margin-top:12px;">+ Adicionar serviço</button>
+          </div>
+
+          <div class="card-block">
+            <h3>Disponibilidade semanal</h3>
+            <p class="bio" style="margin-bottom:10px;">Toque nos horários abaixo para marcar quando você está disponível (visual, apenas demonstração).</p>
+            <div class="avail-grid">
+              <div class="avail-day"><div class="dname">SEG</div><div class="avail-slot toggle-avail free">08h-12h</div></div>
+              <div class="avail-day"><div class="dname">TER</div><div class="avail-slot toggle-avail">08h-12h</div></div>
+              <div class="avail-day"><div class="dname">QUA</div><div class="avail-slot toggle-avail free">08h-12h</div></div>
+              <div class="avail-day"><div class="dname">QUI</div><div class="avail-slot toggle-avail free">08h-12h</div></div>
+              <div class="avail-day"><div class="dname">SEX</div><div class="avail-slot toggle-avail free">08h-12h</div></div>
+              <div class="avail-day"><div class="dname">SÁB</div><div class="avail-slot toggle-avail">08h-12h</div></div>
+              <div class="avail-day"><div class="dname">DOM</div><div class="avail-slot toggle-avail">08h-12h</div></div>
+            </div>
+          </div>
+
+          <button class="btn btn-primary btn-block" data-goto="solicitacoes">Enviar cadastro para análise</button>
+        </div>
+
+        <aside>
+          <div class="card-block">
+            <h4 style="margin:0 0 12px;font-size:13.5px;">Prévia — como tutores vão te ver</h4>
+            <div class="pro-card" style="max-width:none;min-width:0;">
+              <div class="pro-cover" style="background-image:url('https://images.pexels.com/photos/30810890/pexels-photo-30810890.jpeg?auto=compress&cs=tinysrgb&w=400');">
+                <div class="pro-avatar" style="background:var(--secondary-dark);">RS</div>
+              </div>
+              <div class="pro-body">
+                <h4>Rafael Souza</h4>
+                <div class="pro-cat">Passeador • Cães de todos os portes</div>
+                <span class="stars">☆☆☆☆☆ novo no app</span>
+                <div class="pro-price">A partir de <b>R$ 25</b> • Vila Mariana</div>
+                <span class="badge warn">⏳ Em análise</span>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SCREEN: SOLICITAÇÕES ===== -->
+  <section class="screen" id="solicitacoes">
+    <div class="dash-header">
+      <div>
+        <h2>Solicitações recebidas</h2>
+        <p>Aceite pedidos em tempo real — cada agendamento, produto ou reserva vem do marketplace</p>
+      </div>
+      <div class="online-toggle">
+        <span class="lbl on" id="online-label">🟢 Online — recebendo pedidos</span>
+        <button class="btn btn-outline btn-sm" id="toggle-online-btn">Ficar offline</button>
+      </div>
+    </div>
+
+    <div class="section" style="padding-top:14px;">
+      <div class="section-head"><h2>Novas solicitações (2)</h2></div>
+
+      <div class="request-card">
+        <div class="request-top">
+          <div class="booking-photo" style="background:linear-gradient(135deg,#FF9A7A,var(--primary));">JF</div>
+          <div>
+            <h4>Juliana Ferreira · Thor (cão, porte médio)</h4>
+            <div class="bmeta">Passeio 60 min · Rua Domingos de Moraes · 1.1 km</div>
+          </div>
+          <div class="request-price">R$ 35</div>
+        </div>
+        <div class="request-timer">⏱ expira em 0:47</div>
+        <div class="request-actions">
+          <button class="btn btn-outline btn-sm decline-btn">Recusar</button>
+          <button class="btn btn-primary btn-sm accept-btn">Aceitar pedido</button>
+        </div>
+        <div class="request-status-msg">✓ Aceito! Adicionado à sua agenda — e já disparado para a carteira digital do Thor ao final do serviço.</div>
+      </div>
+
+      <div class="request-card">
+        <div class="request-top">
+          <div class="booking-photo" style="background:linear-gradient(135deg,#B39CFF,#7C5CFF);">MO</div>
+          <div>
+            <h4>Marcos Oliveira · Mia (gata)</h4>
+            <div class="bmeta">Hospedagem diária · Vila Clementino · 2.3 km</div>
+          </div>
+          <div class="request-price">R$ 80</div>
+        </div>
+        <div class="request-timer">⏱ expira em 1:32</div>
+        <div class="request-actions">
+          <button class="btn btn-outline btn-sm decline-btn">Recusar</button>
+          <button class="btn btn-primary btn-sm accept-btn">Aceitar pedido</button>
+        </div>
+        <div class="request-status-msg">✓ Aceito! Adicionado à sua agenda — e já disparado para a carteira digital da Mia ao final do serviço.</div>
+      </div>
+
+      <div class="section-head" style="margin-top:8px;"><h2>Aceitos hoje</h2></div>
+      <div class="booking-card">
+        <div class="booking-photo" style="background:linear-gradient(135deg,#FFC26F,#FF9F45);">BT</div>
+        <div class="booking-info">
+          <h4>Beatriz Tavares — Passeio 30 min</h4>
+          <div class="bmeta">Hoje · 14:00 · R$ 25</div>
+        </div>
+        <span class="status-pill confirmed">Confirmado</span>
+        <div class="booking-actions">
+          <button class="btn btn-outline btn-sm" data-goto="painel-pro">Ver painel</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SCREEN: PAINEL PARCEIRO ===== -->
+  <section class="screen" id="painel-pro">
+    <div class="dash-header">
+      <div>
+        <h2>Olá, Rafael 👋</h2>
+        <p>Resumo da sua semana como parceiro Pet Connect Hub</p>
+      </div>
+      <button class="btn btn-outline btn-sm" data-goto="solicitacoes">Ver solicitações</button>
+    </div>
+
+    <div class="section" style="padding-top:14px;padding-bottom:8px;">
+      <div class="stats-row" style="margin:0;">
+        <div class="stat"><div class="num">R$ 480</div><div class="lbl">ganhos brutos esta semana</div></div>
+        <div class="stat"><div class="num">14</div><div class="lbl">atendimentos concluídos</div></div>
+        <div class="stat"><div class="num">4.8 ★</div><div class="lbl">nota média (156 avaliações)</div></div>
+        <div class="stat"><div class="num">92%</div><div class="lbl">taxa de aceite</div></div>
+      </div>
+    </div>
+
+    <div class="dash-body">
+      <div>
+        <div class="payout-card">
+          <div class="payout-row"><span>Ganhos brutos da semana</span><span>R$ 480,00</span></div>
+          <div class="payout-row"><span>Comissão Pet Connect Hub (15%)</span><span>− R$ 72,00</span></div>
+          <div class="payout-row"><span>Repasse líquido a receber</span><span>R$ 408,00</span></div>
+        </div>
+
+        <div class="rank-card">
+          <div class="rank-num">#12</div>
+          <div><b>de 340 parceiros</b> na sua região<br><span style="font-size:12px;color:var(--gray-500);">Ranking baseado em avaliações + taxa de aceite</span></div>
+        </div>
+
+        <div class="boost-card">
+          <h4>🚀 Impulsionar meu perfil</h4>
+          <p>Apareça em destaque nas buscas por passeadores na sua região — a partir de R$ 29/semana.</p>
+          <button class="btn btn-block" style="background:#fff;color:var(--primary-dark);">Contratar destaque</button>
+        </div>
+
+        <div class="card-block">
+          <h3>Ganhos por dia (últimos 7 dias)</h3>
+          <div class="chart-bars">
+            <div class="bar-col"><div class="bval">R$60</div><div class="bar" style="height:40%;"></div><div class="blabel">Seg</div></div>
+            <div class="bar-col"><div class="bval">R$35</div><div class="bar" style="height:23%;"></div><div class="blabel">Ter</div></div>
+            <div class="bar-col"><div class="bval">R$95</div><div class="bar" style="height:63%;"></div><div class="blabel">Qua</div></div>
+            <div class="bar-col"><div class="bval">R$70</div><div class="bar" style="height:47%;"></div><div class="blabel">Qui</div></div>
+            <div class="bar-col"><div class="bval">R$110</div><div class="bar" style="height:73%;"></div><div class="blabel">Sex</div></div>
+            <div class="bar-col"><div class="bval">R$150</div><div class="bar" style="height:100%;"></div><div class="blabel">Sáb</div></div>
+            <div class="bar-col"><div class="bval">—</div><div class="bar" style="height:6%;"></div><div class="blabel">Dom</div></div>
+          </div>
+        </div>
+
+        <h3 style="font-size:15px;margin:22px 0 14px;">Próximos atendimentos</h3>
+        <div class="booking-card">
+          <div class="booking-photo" style="background:linear-gradient(135deg,#FF9A7A,var(--primary));">JF</div>
+          <div class="booking-info"><h4>Juliana Ferreira — Passeio 60 min</h4><div class="bmeta">Hoje · 17:30 · R$ 35</div></div>
+          <span class="status-pill confirmed">Confirmado</span>
+        </div>
+        <div class="booking-card">
+          <div class="booking-photo" style="background:linear-gradient(135deg,#B39CFF,#7C5CFF);">MO</div>
+          <div class="booking-info"><h4>Marcos Oliveira — Hospedagem</h4><div class="bmeta">Amanhã · 09:00 · R$ 80</div></div>
+          <span class="status-pill confirmed">Confirmado</span>
+        </div>
+        <p class="info-tag" style="margin-top:6px;">✓ Últimos atendimentos já sincronizados automaticamente na carteira digital dos pets atendidos.</p>
+
+        <h3 style="font-size:15px;margin:22px 0 14px;">Avaliações recentes</h3>
+        <div class="card-block" style="padding-top:6px;">
+          <div class="review-item">
+            <div class="review-top"><div class="review-avatar">BT</div><div><div class="review-name">Beatriz Tavares</div><div class="review-date">ontem · ★★★★★</div></div></div>
+            <p class="review-text">Rafael é super pontual e o Thor adorou o passeio! Já virou fixo na agenda.</p>
+          </div>
+          <div class="review-item">
+            <div class="review-top"><div class="review-avatar">DC</div><div><div class="review-name">Diego Costa</div><div class="review-date">há 4 dias · ★★★★★</div></div></div>
+            <p class="review-text">Muito cuidadoso, manda fotos durante o passeio. Recomendo.</p>
+          </div>
+        </div>
+      </div>
+
+      <aside>
+        <div class="stat-card"><div class="n">R$ 408</div><div class="l">repasse líquido desta semana</div></div>
+        <div class="stat-card"><div class="n">#12</div><div class="l">posição no ranking regional</div></div>
+        <div class="stat-card"><div class="n">4.8 ★</div><div class="l">nota média (156 avaliações)</div></div>
+        <button class="btn btn-primary btn-block" data-goto="cadastro-pro">Editar minha vitrine</button>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ===== MOBILE BOTTOM NAV ===== -->
+  <div class="bottom-tabs" id="tabs-mobile">
+    <div class="tab-group-m tabs-m-consumidor">
+      <button class="tab-btn active" data-tab="home">🏠<span>Início</span></button>
+      <button class="tab-btn" data-tab="busca">🔍<span>Buscar</span></button>
+      <button class="tab-btn" data-tab="perfil">👤<span>Perfil</span></button>
+      <button class="tab-btn" data-tab="agenda">📇<span>Conta</span></button>
+    </div>
+    <div class="tab-group-m tabs-m-profissional" style="display:none;">
+      <button class="tab-btn" data-tab="cadastro-pro">📝<span>Cadastro</span></button>
+      <button class="tab-btn" data-tab="solicitacoes">🔔<span>Pedidos</span></button>
+      <button class="tab-btn" data-tab="painel-pro">📊<span>Painel</span></button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  function goTo(tabName){
+    document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
+    var target = document.getElementById(tabName);
+    if(target) target.classList.add('active');
+    document.querySelectorAll('.tab-btn').forEach(function(b){
+      b.classList.toggle('active', b.getAttribute('data-tab') === tabName);
+    });
+    window.scrollTo(0,0);
+  }
+
+  function setMode(mode){
+    document.body.classList.remove('mode-consumidor','mode-profissional');
+    document.body.classList.add('mode-'+mode);
+    document.querySelectorAll('.mode-btn').forEach(function(b){
+      b.classList.toggle('active', b.getAttribute('data-mode') === mode);
+    });
+    var caption = document.getElementById('mode-caption');
+    if(mode === 'consumidor'){
+      caption.textContent = 'Você está vendo a jornada de quem busca e contrata um serviço pet.';
+    } else {
+      caption.textContent = 'Você está vendo a jornada de quem se cadastra como parceiro (veterinário, pet shop, hotel ou profissional autônomo).';
+    }
+  }
+
+  document.querySelectorAll('.tab-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){ goTo(btn.getAttribute('data-tab')); });
+  });
+
+  document.querySelectorAll('.mode-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var mode = btn.getAttribute('data-mode');
+      setMode(mode);
+      goTo(mode === 'consumidor' ? 'home' : 'cadastro-pro');
+    });
+  });
+
+  document.querySelectorAll('[data-goto]').forEach(function(el){
+    el.addEventListener('click', function(e){
+      e.preventDefault();
+      goTo(el.getAttribute('data-goto'));
+    });
+  });
+
+  document.querySelectorAll('[data-mode-goto]').forEach(function(el){
+    el.addEventListener('click', function(e){
+      e.preventDefault();
+      var parts = el.getAttribute('data-mode-goto').split(':');
+      setMode(parts[0]);
+      goTo(parts[1]);
+    });
+  });
+
+  document.querySelectorAll('.toggle-avail').forEach(function(el){
+    el.addEventListener('click', function(){ el.classList.toggle('free'); });
+  });
+
+  document.querySelectorAll('.accept-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){ btn.closest('.request-card').classList.add('accepted'); });
+  });
+  document.querySelectorAll('.decline-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){ btn.closest('.request-card').classList.add('declined'); });
+  });
+
+  var onlineBtn = document.getElementById('toggle-online-btn');
+  if(onlineBtn){
+    onlineBtn.addEventListener('click', function(){
+      var label = document.getElementById('online-label');
+      var isOnline = label.classList.contains('on');
+      if(isOnline){
+        label.textContent = '⚪ Offline — pausado';
+        label.classList.remove('on'); label.classList.add('off');
+        onlineBtn.textContent = 'Ficar online';
+      } else {
+        label.textContent = '🟢 Online — recebendo pedidos';
+        label.classList.remove('off'); label.classList.add('on');
+        onlineBtn.textContent = 'Ficar offline';
+      }
+    });
+  }
+
+  // Sub-tabs dentro de Minha Conta (tutor)
+  document.querySelectorAll('.subnav-pill').forEach(function(pill){
+    pill.addEventListener('click', function(){
+      var target = pill.getAttribute('data-subtab');
+      document.querySelectorAll('#agenda .subscreen').forEach(function(s){ s.classList.remove('active'); });
+      document.getElementById(target).classList.add('active');
+      document.querySelectorAll('#agenda .subnav-pill').forEach(function(p){ p.classList.toggle('active', p===pill); });
+    });
+  });
+
+  // Tipo de parceiro (cadastro) troca os documentos exigidos
+  document.querySelectorAll('.ptype-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var type = btn.getAttribute('data-ptype');
+      document.querySelectorAll('.ptype-btn').forEach(function(b){ b.classList.toggle('active', b===btn); });
+      document.querySelectorAll('.doc-set').forEach(function(d){ d.classList.toggle('active', d.getAttribute('data-docs')===type); });
+    });
+  });
+</script>
+</body>
+</html>
