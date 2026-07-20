@@ -6,6 +6,8 @@
 <title>Pet Connect Hub — Protótipo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
   :root{
     --primary:#FF6B4A;
@@ -206,6 +208,12 @@
 
   .map-mock{background:linear-gradient(135deg,var(--secondary-light),#fff);border:1px solid var(--gray-300);border-radius:16px;height:210px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;margin-bottom:14px;}
   .map-mock .pin{position:absolute;font-size:20px;}
+  .topnav{z-index:1000 !important;}
+  #busca-map{height:300px;border-radius:16px;overflow:hidden;margin-bottom:10px;border:1px solid var(--gray-300);position:relative;z-index:0;background:var(--gray-100);}
+  #busca-map .leaflet-pane, #busca-map .leaflet-top, #busca-map .leaflet-bottom{z-index:5;}
+  #busca-map .leaflet-popup-content{font-family:'Inter',sans-serif;font-size:12.5px;}
+  .you-dot{width:16px;height:16px;border-radius:50%;background:#2D9CDB;border:3px solid #fff;box-shadow:0 0 0 5px rgba(45,156,219,0.3);}
+  .map-loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:12.5px;color:var(--gray-500);font-weight:600;background:var(--gray-100);z-index:1;}
 
   .profile-cover{height:170px;border-radius:0 0 24px 24px;position:relative;background-size:cover;background-position:center;}
   .profile-cover::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(18,26,36,0.15),rgba(18,26,36,0.35));border-radius:0 0 24px 24px;}
@@ -621,13 +629,8 @@
       </aside>
 
       <div class="results-col">
-        <div class="map-mock">
-          <span class="pin" style="left:30%;top:35%;">📍</span>
-          <span class="pin" style="left:55%;top:55%;">📍</span>
-          <span class="pin" style="left:70%;top:28%;">📍</span>
-          <span class="pin" style="left:42%;top:70%;">📍</span>
-          <span style="font-size:12px;color:var(--secondary-dark);font-weight:600;">mapa ilustrativo baseado na sua geolocalização</span>
-        </div>
+        <div id="busca-map"><div class="map-loading" id="busca-map-loading">📍 Obtendo sua localização...</div></div>
+        <div class="info-tag" style="margin:-4px 0 14px;">🖐️ Arraste para navegar e use scroll/pinça para zoom · mapa real (OpenStreetMap) baseado na sua geolocalização</div>
         <div class="results-top">
           <span>32 resultados</span>
           <select class="sort-select"><option>Ordenar: Relevância</option><option>Menor preço</option><option>Melhor avaliação</option><option>Mais próximo</option></select>
@@ -1257,6 +1260,58 @@
       b.classList.toggle('active', b.getAttribute('data-tab') === tabName);
     });
     window.scrollTo(0,0);
+    if(tabName === 'busca'){
+      startBuscaMap();
+      setTimeout(function(){ if(window.buscaMap){ window.buscaMap.invalidateSize(); } }, 200);
+    }
+  }
+
+  // ===== Mapa real e arrastável (Leaflet + OpenStreetMap) na aba Buscar =====
+  window.buscaMap = null;
+  function renderBuscaMap(lat, lng, isRealLocation){
+    if(window.buscaMap) return;
+    var loadingEl = document.getElementById('busca-map-loading');
+    if(loadingEl) loadingEl.remove();
+
+    window.buscaMap = L.map('busca-map', { scrollWheelZoom: true, dragging: true }).setView([lat, lng], 14);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(window.buscaMap);
+
+    var youIcon = L.divIcon({ className: '', html: '<div class="you-dot"></div>', iconSize: [16,16] });
+    L.marker([lat, lng], { icon: youIcon }).addTo(window.buscaMap)
+      .bindPopup(isRealLocation ? '📍 Você está aqui' : '📍 Vila Mariana, SP (localização aproximada)');
+
+    var pros = [
+      { name: 'Dra. Carla Mendes', cat: 'Veterinária · Clínica geral', rating: '★★★★★ 4.9', dlat: 0.006, dlng: 0.004 },
+      { name: 'Dr. Lucas Barbosa', cat: 'Veterinário · Ortopedia', rating: '★★★★★ 4.8', dlat: -0.008, dlng: 0.010 },
+      { name: 'Dra. Amanda Vieira', cat: 'Veterinária · Dermatologia', rating: '★★★★☆ 4.6', dlat: 0.011, dlng: -0.009 },
+      { name: 'Rafael Souza', cat: 'Passeador', rating: '★★★★★ 4.8', dlat: -0.005, dlng: -0.007 }
+    ];
+    pros.forEach(function(p){
+      var m = L.marker([lat + p.dlat, lng + p.dlng]).addTo(window.buscaMap);
+      m.bindPopup(
+        '<b>' + p.name + '</b><br>' + p.cat + '<br>' + p.rating +
+        '<br><button onclick="goTo(\'perfil\')" style="margin-top:6px;padding:6px 10px;border-radius:8px;background:#FF6B4A;color:#fff;border:none;font-weight:700;font-size:11.5px;cursor:pointer;">Ver perfil</button>'
+      );
+    });
+  }
+
+  function startBuscaMap(){
+    if(window.buscaMap || window.buscaMapRequested) return;
+    window.buscaMapRequested = true;
+    var fallbackLat = -23.5875, fallbackLng = -46.6355; // Vila Mariana, SP (aproximado)
+    if(navigator.geolocation){
+      navigator.geolocation.getCurrentPosition(
+        function(pos){ renderBuscaMap(pos.coords.latitude, pos.coords.longitude, true); },
+        function(){ renderBuscaMap(fallbackLat, fallbackLng, false); },
+        { timeout: 6000 }
+      );
+    } else {
+      renderBuscaMap(fallbackLat, fallbackLng, false);
+    }
   }
 
   function setMode(mode){
