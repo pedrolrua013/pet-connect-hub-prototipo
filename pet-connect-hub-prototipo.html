@@ -393,6 +393,28 @@
   .boost-card{background:linear-gradient(120deg,#FF7A5A,var(--primary));color:#fff;border-radius:16px;padding:18px 20px;margin-bottom:16px;}
   .boost-card h4{margin:0 0 4px;font-size:15px;}
   .boost-card p{margin:0 0 12px;font-size:12px;opacity:.92;}
+
+  /* Ferramentas do parceiro */
+  .tools-header{display:flex;justify-content:space-between;align-items:center;padding:28px 44px 0;flex-wrap:wrap;gap:14px;}
+  .tools-header h2{margin:0;font-size:22px;}
+  .tools-balance{display:flex;align-items:center;gap:8px;background:var(--gray-100);padding:9px 16px;border-radius:100px;font-weight:800;font-size:14px;flex-shrink:0;}
+  .tools-balance .add-btn{width:22px;height:22px;border-radius:50%;background:var(--dark);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;}
+  .tools-search{border:1.5px solid var(--gray-300);border-radius:10px;padding:10px 14px;font-size:13.5px;width:230px;font-family:inherit;}
+  .tools-group{padding:26px 44px 0;}
+  .tools-group h3{font-size:15px;margin:0 0 16px;color:var(--gray-700);}
+  .tools-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+  @media (max-width:900px){.tools-grid{grid-template-columns:1fr;}}
+  .tool-card{background:#fff;border:1px solid var(--gray-300);border-radius:18px;overflow:hidden;transition:all .15s ease;}
+  .tool-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);}
+  .tool-visual{height:150px;position:relative;display:flex;align-items:center;justify-content:center;font-size:50px;overflow:hidden;}
+  .tv-a{background:linear-gradient(135deg,#6C5CE7,#4A3FBF);}
+  .tv-b{background:linear-gradient(135deg,var(--secondary),#0a6d58);}
+  .tv-c{background:linear-gradient(135deg,var(--primary),var(--primary-dark));}
+  .tool-ribbon{position:absolute;top:16px;left:-38px;width:155px;text-align:center;background:rgba(255,255,255,0.24);color:#fff;font-size:9.5px;font-weight:800;letter-spacing:.05em;padding:5px 0;transform:rotate(-45deg);text-transform:uppercase;}
+  .tool-cost{position:absolute;top:12px;right:12px;background:rgba(255,255,255,0.95);color:var(--dark);font-size:11.5px;font-weight:800;padding:6px 12px;border-radius:100px;display:flex;align-items:center;gap:4px;}
+  .tool-body{padding:16px 18px 20px;}
+  .tool-body h4{margin:0 0 7px;font-size:15px;}
+  .tool-body p{margin:0;font-size:12px;color:var(--gray-500);line-height:1.6;}
 </style>
 </head>
 <body class="mode-consumidor">
@@ -431,6 +453,10 @@
         <button class="tab-btn" data-tab="painel-pro">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg>
           Painel
+        </button>
+        <button class="tab-btn" data-tab="ferramentas-pro">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a4 4 0 105 5l-4 4-2-2 4-4a4 4 0 00-5-5l-2.7 2.7"/><path d="M3 21l6-6"/></svg>
+          Ferramentas
         </button>
       </div>
     </div>
@@ -1229,8 +1255,135 @@
         <div class="stat-card"><div class="n">R$ 408</div><div class="l">repasse líquido desta semana</div></div>
         <div class="stat-card"><div class="n">#12</div><div class="l">posição no ranking regional</div></div>
         <div class="stat-card"><div class="n">4.8 ★</div><div class="l">nota média (156 avaliações)</div></div>
+        <button class="btn btn-outline btn-block" data-goto="ferramentas-pro" style="margin-bottom:10px;">🛠️ Ver todas as ferramentas</button>
         <button class="btn btn-primary btn-block" data-goto="cadastro-pro">Editar minha vitrine</button>
       </aside>
+    </div>
+  </section>
+
+  <!-- ===== SCREEN: FERRAMENTAS DO PARCEIRO ===== -->
+  <section class="screen" id="ferramentas-pro">
+    <div class="tools-header">
+      <div>
+        <h2>Ferramentas</h2>
+        <p class="muted" style="margin:4px 0 0;color:var(--gray-500);font-size:13px;">Tudo pra ajudar você a gerenciar e fazer crescer seu negócio pet</p>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+        <div class="tools-balance">🐾 750 Patinhas <span class="add-btn">+</span></div>
+        <input class="tools-search" type="text" placeholder="Pesquisar ferramenta">
+      </div>
+    </div>
+
+    <div class="tools-group">
+      <h3>Marketing &amp; Conteúdo</h3>
+      <div class="tools-grid">
+        <div class="tool-card">
+          <div class="tool-visual tv-a">
+            <div class="tool-ribbon">Novo</div>
+            <div class="tool-cost">Continuar</div>
+            📸
+          </div>
+          <div class="tool-body">
+            <h4>Gerador de Imagens IA</h4>
+            <p>Crie fotos profissionais pro seu perfil: antes/depois de banho e tosa, banners de promoção e fotos ambientadas dos pets.</p>
+          </div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-visual tv-a">
+            <div class="tool-ribbon">Atualizado</div>
+            <div class="tool-cost">🐾 600</div>
+            🎬
+          </div>
+          <div class="tool-body">
+            <h4>Criação de Clips</h4>
+            <p>Transforme as fotos do atendimento em vídeos curtos prontos para Reels e Stories, com IA.</p>
+          </div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-visual tv-a">
+            <div class="tool-cost">Grátis</div>
+            💬
+          </div>
+          <div class="tool-body">
+            <h4>Assistente de Respostas IA</h4>
+            <p>Sugestões automáticas de resposta para as dúvidas mais comuns dos tutores no chat — mais rapidez, mais conversão.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tools-group">
+      <h3>Financeiro</h3>
+      <div class="tools-grid">
+        <div class="tool-card">
+          <div class="tool-visual tv-b">
+            <div class="tool-ribbon">Atualizado</div>
+            <div class="tool-cost">Grátis</div>
+            🧮
+          </div>
+          <div class="tool-body">
+            <h4>Calculadora de Precificação</h4>
+            <p>Descubra o preço certo pro seu serviço considerando insumos, tempo, deslocamento e a comissão da plataforma.</p>
+          </div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-visual tv-b">
+            <div class="tool-cost">🐾 50</div>
+            ⚖️
+          </div>
+          <div class="tool-body">
+            <h4>Ponto de Equilíbrio</h4>
+            <p>Quantos atendimentos por mês você precisa para cobrir seus custos fixos e variáveis e sair do zero a zero.</p>
+          </div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-visual tv-b">
+            <div class="tool-cost">🐾 25</div>
+            🚀
+          </div>
+          <div class="tool-body">
+            <h4>Simulador de Impulsionamento</h4>
+            <p>Estime quantos agendamentos a mais você pode ganhar contratando destaque na busca por região e categoria.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tools-group" style="padding-bottom:50px;">
+      <h3>Gestão &amp; Relacionamento</h3>
+      <div class="tools-grid">
+        <div class="tool-card">
+          <div class="tool-visual tv-c">
+            <div class="tool-cost">🐾 50</div>
+            🩺
+          </div>
+          <div class="tool-body">
+            <h4>Diagnóstico do Negócio</h4>
+            <p>Descubra o nível de maturidade do seu negócio pet: pontos fortes, oportunidades e um plano de ação personalizado.</p>
+          </div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-visual tv-c">
+            <div class="tool-cost">🐾 25</div>
+            🔍
+          </div>
+          <div class="tool-body">
+            <h4>Raio-X da Vitrine</h4>
+            <p>Diagnóstico completo do seu perfil: funil de visualizações, mensagens, agendamentos e ações recomendadas.</p>
+          </div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-visual tv-c">
+            <div class="tool-ribbon">Novo</div>
+            <div class="tool-cost">Grátis</div>
+            🔔
+          </div>
+          <div class="tool-body">
+            <h4>CRM de Recompra &amp; Lembretes</h4>
+            <p>Lista de pets no prazo de voltar (banho a cada 30 dias, vacina vencendo) pra você puxar assunto antes da concorrência.</p>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -1246,6 +1399,7 @@
       <button class="tab-btn" data-tab="cadastro-pro">📝<span>Cadastro</span></button>
       <button class="tab-btn" data-tab="solicitacoes">🔔<span>Pedidos</span></button>
       <button class="tab-btn" data-tab="painel-pro">📊<span>Painel</span></button>
+      <button class="tab-btn" data-tab="ferramentas-pro">🛠️<span>Ferramentas</span></button>
     </div>
   </div>
 
