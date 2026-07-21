@@ -589,6 +589,45 @@
   .landing-screen{background:linear-gradient(160deg, var(--turquoise-1) 0%, var(--turquoise-2) 45%, var(--turquoise-3) 78%, var(--turquoise-4) 100%);}
   .landing-brand .paw-badge-lg, .brand .paw-badge{background:linear-gradient(135deg, var(--primary), var(--secondary-dark));}
 
+  /* ===========================================================
+     GAMIFICAÇÃO — barra de progresso em formato de osso
+     =========================================================== */
+  .bone-progress{display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none;}
+  .bone-track{position:relative;width:76px;height:18px;flex-shrink:0;}
+  .bone-track .bone-bar{position:absolute;left:7px;right:7px;top:5px;height:8px;border-radius:4px;background:rgba(255,255,255,0.45);overflow:hidden;box-shadow:inset 0 0 0 1px rgba(255,255,255,0.55);}
+  .bone-track .bone-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--primary),var(--primary-dark));transition:width .5s ease;}
+  .bone-track .bone-lobe{position:absolute;width:11px;height:11px;border-radius:50%;background:rgba(255,255,255,0.72);box-shadow:inset 0 0 0 1px rgba(255,255,255,0.55);}
+  .bone-track .bone-lobe.tl{left:0;top:0;} .bone-track .bone-lobe.bl{left:0;bottom:0;}
+  .bone-track .bone-lobe.tr{right:0;top:0;} .bone-track .bone-lobe.br{right:0;bottom:0;}
+  .bone-pct{font-size:11.5px;font-weight:800;color:#fff;text-shadow:0 1px 5px rgba(0,0,0,0.3);white-space:nowrap;}
+  .header-gamification{display:flex;flex-direction:column;align-items:flex-end;gap:2px;margin-right:2px;}
+  .header-gamification .hg-label{font-size:9.5px;font-weight:700;color:rgba(255,255,255,0.85);text-transform:uppercase;letter-spacing:.03em;text-shadow:0 1px 5px rgba(0,0,0,0.3);}
+  @media (max-width:760px){ .header-gamification{display:none;} }
+
+  /* Versão grande, usada dentro de cards (Nível de Cuidado / painel do parceiro) */
+  .bone-progress.lg{gap:14px;}
+  .bone-progress.lg .bone-track{width:160px;height:26px;}
+  .bone-progress.lg .bone-track .bone-bar{left:10px;right:10px;top:8px;height:10px;border-radius:5px;background:var(--gray-100);box-shadow:inset 0 0 0 1px var(--gray-300);}
+  .bone-progress.lg .bone-track .bone-lobe{width:16px;height:16px;background:var(--gray-100);box-shadow:inset 0 0 0 1px var(--gray-300);}
+  .bone-progress.lg .bone-pct{font-size:15px;color:var(--dark);text-shadow:none;}
+
+  .level-card{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:18px;}
+  .level-info h3{margin:0 0 3px;font-size:16.5px;}
+  .level-info p{margin:0;font-size:12.5px;color:var(--gray-500);}
+  .level-tag{display:inline-flex;align-items:center;gap:5px;background:var(--primary-light);color:var(--primary-dark);font-size:11px;font-weight:800;padding:4px 11px;border-radius:100px;margin-bottom:6px;}
+
+  .badge-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+  @media (max-width:700px){.badge-grid{grid-template-columns:repeat(2,1fr);}}
+  .ach-badge{text-align:center;padding:16px 10px;border-radius:14px;background:var(--secondary-light);border:1px solid rgba(14,165,183,0.25);}
+  .ach-badge .ico{font-size:26px;margin-bottom:6px;}
+  .ach-badge .lbl{font-size:11.5px;font-weight:700;color:var(--secondary-dark);line-height:1.35;}
+  .ach-badge.locked{background:var(--gray-100);border-color:var(--gray-300);opacity:.6;}
+  .ach-badge.locked .lbl{color:var(--gray-500);}
+  .ach-badge .sub{font-size:10px;color:var(--gray-500);margin-top:2px;font-weight:600;}
+
+  .streak-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;}
+  .streak-chip{display:flex;align-items:center;gap:6px;background:var(--primary-light);color:var(--primary-dark);font-size:12px;font-weight:700;padding:8px 13px;border-radius:100px;}
+
   /* Toasts de feedback */
   #toast-container{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:2000;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none;}
   .toast{background:rgba(14,46,54,0.94);color:#fff;padding:12px 20px;border-radius:100px;font-size:13.5px;font-weight:600;box-shadow:var(--shadow-lg);backdrop-filter:blur(10px);opacity:0;transform:translateY(10px);transition:all .25s ease;}
@@ -668,6 +707,17 @@
     <div class="nav-actions">
       <a class="btn-ghost" href="#" id="switch-profile-link">🔁 Trocar perfil</a>
       <a class="btn-ghost" href="#" data-mode-goto="profissional:cadastro-pro">Sou parceiro</a>
+      <div class="header-gamification" id="header-gamification">
+        <span class="hg-label" id="hg-label">Nível de Cuidado</span>
+        <div class="bone-progress" id="hg-bone-btn" title="68% para o próximo nível">
+          <div class="bone-track">
+            <span class="bone-lobe tl"></span><span class="bone-lobe bl"></span>
+            <span class="bone-lobe tr"></span><span class="bone-lobe br"></span>
+            <div class="bone-bar"><div class="bone-fill" id="hg-bone-fill" style="width:64%;"></div></div>
+          </div>
+          <span class="bone-pct" id="hg-bone-pct">64%</span>
+        </div>
+      </div>
       <div class="avatar-mini" id="header-avatar-btn" title="Meu perfil" style="cursor:pointer;">PR</div>
     </div>
   </nav>
@@ -942,7 +992,7 @@
       </div>
       <div class="profile-actions">
         <button class="btn btn-outline" data-toast="Mensagem enviada (demonstração)">💬 Mensagem</button>
-        <button class="btn btn-primary" data-goto="agenda">Agendar atendimento</button>
+        <button class="btn btn-primary" data-goto="agenda" data-toast="+20 pontos de cuidado 🦴 — agendamento em andamento">Agendar atendimento</button>
       </div>
     </div>
 
@@ -1010,7 +1060,7 @@
           <div class="row"><span>Atendimentos concluídos</span><b>540+</b></div>
           <div class="row"><span>No app desde</span><b>2022</b></div>
         </div>
-        <button class="btn btn-primary btn-block" data-goto="agenda">Agendar com Dra. Carla</button>
+        <button class="btn btn-primary btn-block" data-goto="agenda" data-toast="+20 pontos de cuidado 🦴 — agendamento em andamento">Agendar com Dra. Carla</button>
       </aside>
     </div>
   </section>
@@ -1022,7 +1072,7 @@
         <h2>Olá, Pedro 👋</h2>
         <p>Sua conta, seus pets e tudo que o Pet Connect Hub guarda por você</p>
       </div>
-      <button class="btn btn-primary btn-sm" data-goto="busca">+ Novo agendamento</button>
+      <button class="btn btn-primary btn-sm" data-goto="busca" data-toast="🦴 Agende um serviço e ganhe até 20 pontos de cuidado">+ Novo agendamento</button>
     </div>
 
     <div class="pets-row">
@@ -1077,7 +1127,7 @@
               <h4>Dr. Lucas Barbosa — Consulta</h4>
               <div class="bmeta">Para: Thor · 2 de julho · concluído · R$ 130</div>
             </div>
-            <span class="status-pill done">Avaliar →</span>
+            <span class="status-pill done" data-toast="+15 pontos de cuidado 🦴 — obrigado por avaliar!" style="cursor:pointer;">Avaliar →</span>
           </div>
         </div>
         <aside>
@@ -1147,25 +1197,25 @@
             <div class="product-icon">🍖</div>
             <div class="product-info"><h4>Ração Premium Adulto 15kg</h4><div class="pmeta">Você compra a cada ~30 dias · última compra há 28 dias</div></div>
             <div class="product-price">R$ 189,90</div>
-            <button class="btn btn-primary btn-sm" data-toast="Ração Premium adicionada ao carrinho (demonstração)">Comprar</button>
+            <button class="btn btn-primary btn-sm" data-toast="+8 pontos de cuidado 🦴 — Ração Premium adicionada ao carrinho">Comprar</button>
           </div>
           <div class="product-row">
             <div class="product-icon">💊</div>
             <div class="product-info"><h4>Cetoconazol (conforme receita)</h4><div class="pmeta">Prescrito por Dr. Lucas Barbosa em 02/07</div></div>
             <div class="product-price">R$ 42,00</div>
-            <button class="btn btn-primary btn-sm" data-toast="Cetoconazol adicionado ao carrinho (demonstração)">Comprar</button>
+            <button class="btn btn-primary btn-sm" data-toast="+8 pontos de cuidado 🦴 — Cetoconazol adicionado ao carrinho">Comprar</button>
           </div>
           <div class="product-row">
             <div class="product-icon">🧴</div>
             <div class="product-info"><h4>Shampoo hipoalergênico</h4><div class="pmeta">Recomendado após o banho de 12/07</div></div>
             <div class="product-price">R$ 38,00</div>
-            <button class="btn btn-outline btn-sm" data-toast="Shampoo hipoalergênico adicionado ao carrinho (demonstração)">Adicionar</button>
+            <button class="btn btn-outline btn-sm" data-toast="+5 pontos de cuidado 🦴 — Shampoo hipoalergênico adicionado ao carrinho">Adicionar</button>
           </div>
           <div class="product-row">
             <div class="product-icon">🦴</div>
             <div class="product-info"><h4>Petisco dental</h4><div class="pmeta">Complementa a saúde bucal</div></div>
             <div class="product-price">R$ 24,90</div>
-            <button class="btn btn-outline btn-sm" data-toast="Petisco dental adicionado ao carrinho (demonstração)">Adicionar</button>
+            <button class="btn btn-outline btn-sm" data-toast="+5 pontos de cuidado 🦴 — Petisco dental adicionado ao carrinho">Adicionar</button>
           </div>
           <div class="sub-banner">
             <div><h4>Assinatura Pet Connect+</h4><p>Receba a ração todo mês com 10% de desconto e frete grátis.</p></div>
@@ -1410,6 +1460,37 @@
         <div class="rank-card">
           <div class="rank-num">#12</div>
           <div><b>de 340 parceiros</b> na sua região<br><span style="font-size:12px;color:var(--gray-500);">Ranking baseado em avaliações + taxa de aceite</span></div>
+        </div>
+
+        <div class="card-block">
+          <div class="level-card">
+            <div class="level-info">
+              <span class="level-tag">🦴 Nível 2 · Parceiro Consolidado</span>
+              <h3>420 de 600 pontos de reputação</h3>
+              <p>Faltam 180 pontos para virar Parceiro Top e entrar no Top 10 da região.</p>
+            </div>
+            <div class="bone-progress lg" title="55% para o próximo nível">
+              <div class="bone-track">
+                <span class="bone-lobe tl"></span><span class="bone-lobe bl"></span>
+                <span class="bone-lobe tr"></span><span class="bone-lobe br"></span>
+                <div class="bone-bar"><div class="bone-fill" style="width:55%;"></div></div>
+              </div>
+              <span class="bone-pct">55%</span>
+            </div>
+          </div>
+          <h4 style="font-size:13.5px;margin:0 0 12px;">Conquistas</h4>
+          <div class="badge-grid">
+            <div class="ach-badge"><div class="ico">⚡</div><div class="lbl">Resposta rápida</div></div>
+            <div class="ach-badge"><div class="ico">💯</div><div class="lbl">150+ atendimentos</div></div>
+            <div class="ach-badge"><div class="ico">🌟</div><div class="lbl">4.8+ de avaliação</div></div>
+            <div class="ach-badge locked"><div class="ico">🏅</div><div class="lbl">Top 10 da região</div><div class="sub">#12 atualmente</div></div>
+            <div class="ach-badge locked"><div class="ico">🎯</div><div class="lbl">0% de cancelamento</div><div class="sub">92% taxa de aceite</div></div>
+            <div class="ach-badge locked"><div class="ico">👑</div><div class="lbl">Parceiro Elite</div><div class="sub">nível 4</div></div>
+          </div>
+          <div class="streak-row">
+            <div class="streak-chip">🔥 9 dias seguidos online</div>
+            <div class="streak-chip">🦴 420 pontos de reputação</div>
+          </div>
         </div>
 
         <div class="boost-card">
@@ -1722,6 +1803,38 @@
     <div class="profile-body" style="grid-template-columns:1fr 300px;">
       <div>
         <div class="card-block">
+          <div class="level-card">
+            <div class="level-info">
+              <span class="level-tag">🦴 Nível 2 · Tutor Dedicado</span>
+              <h3>310 de 400 pontos de cuidado</h3>
+              <p>Faltam 90 pontos para virar Tutor Expert e desbloquear novos selos.</p>
+            </div>
+            <div class="bone-progress lg" title="64% para o próximo nível">
+              <div class="bone-track">
+                <span class="bone-lobe tl"></span><span class="bone-lobe bl"></span>
+                <span class="bone-lobe tr"></span><span class="bone-lobe br"></span>
+                <div class="bone-bar"><div class="bone-fill" style="width:64%;"></div></div>
+              </div>
+              <span class="bone-pct">64%</span>
+            </div>
+          </div>
+          <h4 style="font-size:13.5px;margin:0 0 12px;">Conquistas</h4>
+          <div class="badge-grid">
+            <div class="ach-badge"><div class="ico">🐾</div><div class="lbl">Perfil completo</div></div>
+            <div class="ach-badge"><div class="ico">💉</div><div class="lbl">Vacinas em dia</div></div>
+            <div class="ach-badge"><div class="ico">⭐</div><div class="lbl">Primeira avaliação</div></div>
+            <div class="ach-badge"><div class="ico">📅</div><div class="lbl">5 agendamentos</div></div>
+            <div class="ach-badge locked"><div class="ico">🔥</div><div class="lbl">Sequência de 3 meses</div><div class="sub">2 de 3 meses</div></div>
+            <div class="ach-badge locked"><div class="ico">👥</div><div class="lbl">Indicou um amigo</div><div class="sub">0 de 1</div></div>
+          </div>
+          <div class="streak-row">
+            <div class="streak-chip">🔥 2 meses seguidos cuidando do Thor</div>
+            <div class="streak-chip">🐾 310 pontos acumulados</div>
+          </div>
+          <p class="bio" style="margin:16px 0 0;">Você ganha pontos agendando serviços, mantendo a carteira digital em dia, avaliando parceiros e indicando o Pet Connect Hub para outros tutores.</p>
+        </div>
+
+        <div class="card-block">
           <h3>Dados do pet</h3>
           <div class="form-grid">
             <div class="form-field"><label>Nome</label><input type="text" value="Thor"></div>
@@ -1735,7 +1848,7 @@
             <div class="form-field full"><label>Alergias e restrições</label><textarea>Nenhuma alergia registrada até o momento.</textarea></div>
             <div class="form-field full"><label>Medicações em uso</label><textarea>Nenhuma medicação contínua.</textarea></div>
           </div>
-          <button class="btn btn-primary" style="margin-top:18px;" data-toast="Dados do pet salvos (demonstração)">Salvar dados do pet</button>
+          <button class="btn btn-primary" style="margin-top:18px;" data-toast="+10 pontos de cuidado 🦴 — dados do pet atualizados!">Salvar dados do pet</button>
         </div>
 
         <div class="card-block">
@@ -1761,7 +1874,7 @@
           <div class="privacy-row"><span>Permitir acesso via QR Code em emergências</span><div class="toggle-switch on"><div class="knob"></div></div></div>
           <div class="privacy-row"><span>Compartilhar histórico com novos parceiros automaticamente</span><div class="toggle-switch on"><div class="knob"></div></div></div>
           <div class="privacy-row"><span>Permitir que parceiros vejam alergias e restrições</span><div class="toggle-switch on"><div class="knob"></div></div></div>
-          <button class="btn btn-primary" style="margin-top:16px;" data-toast="Personalização da carteira salva (demonstração)">Salvar personalização</button>
+          <button class="btn btn-primary" style="margin-top:16px;" data-toast="+5 pontos de cuidado 🦴 — carteira personalizada!">Salvar personalização</button>
         </div>
       </div>
 
@@ -1887,6 +2000,24 @@
     } else {
       caption.textContent = 'Você está vendo a jornada de quem se cadastra como parceiro (veterinário, pet shop, hotel ou profissional autônomo).';
     }
+    updateHeaderGamification(mode);
+  }
+
+  // ===== Gamificação =====
+  var gamification = {
+    consumidor: { label: 'Nível de Cuidado', pct: 64, tooltip: '64% para o próximo nível — Tutor Expert' },
+    profissional: { label: 'Nível de Parceiro', pct: 55, tooltip: '55% para o próximo nível — Parceiro Top' }
+  };
+  function updateHeaderGamification(mode){
+    var g = gamification[mode] || gamification.consumidor;
+    var labelEl = document.getElementById('hg-label');
+    var fillEl = document.getElementById('hg-bone-fill');
+    var pctEl = document.getElementById('hg-bone-pct');
+    var btnEl = document.getElementById('hg-bone-btn');
+    if(labelEl) labelEl.textContent = g.label;
+    if(fillEl) fillEl.style.width = g.pct + '%';
+    if(pctEl) pctEl.textContent = g.pct + '%';
+    if(btnEl) btnEl.setAttribute('title', g.tooltip);
   }
 
   document.querySelectorAll('.tab-btn').forEach(function(btn){
@@ -1932,7 +2063,10 @@
   });
 
   document.querySelectorAll('.accept-btn').forEach(function(btn){
-    btn.addEventListener('click', function(){ btn.closest('.request-card').classList.add('accepted'); });
+    btn.addEventListener('click', function(){
+      btn.closest('.request-card').classList.add('accepted');
+      showToast('+15 pontos de reputação 🦴 — pedido aceito!');
+    });
   });
   document.querySelectorAll('.decline-btn').forEach(function(btn){
     btn.addEventListener('click', function(){ btn.closest('.request-card').classList.add('declined'); });
@@ -1985,6 +2119,19 @@
       }
     });
   }
+
+  // Barra de osso do cabeçalho também navega para a tela de nível/conquistas
+  var hgBoneBtn = document.getElementById('hg-bone-btn');
+  if(hgBoneBtn){
+    hgBoneBtn.addEventListener('click', function(){
+      if(document.body.classList.contains('mode-profissional')){
+        goTo('painel-pro');
+      } else {
+        goTo('perfil-pet');
+      }
+    });
+  }
+  updateHeaderGamification(document.body.classList.contains('mode-profissional') ? 'profissional' : 'consumidor');
 
   // Troca entre pets na tela de Perfil do Pet
   var petProfileData = {
