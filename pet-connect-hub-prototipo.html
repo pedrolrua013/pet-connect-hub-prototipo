@@ -10,13 +10,17 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
   :root{
-    --primary:#FF6B4A;
-    --primary-dark:#E14F30;
-    --primary-light:#FFE4DB;
-    --secondary:#12A181;
-    --secondary-dark:#0C7F66;
-    --secondary-light:#DCF5EE;
-    --dark:#1F2430;
+    --primary:#FF7A38;
+    --primary-dark:#E8611F;
+    --primary-light:#FFE3D1;
+    --secondary:#0EA5B7;
+    --secondary-dark:#0A7E8C;
+    --secondary-light:#DCF6F7;
+    --turquoise-1:#083B49;
+    --turquoise-2:#0C7C93;
+    --turquoise-3:#17B8C4;
+    --turquoise-4:#6FE4DC;
+    --dark:#0E2E36;
     --gray-700:#4B5264;
     --gray-500:#8891A5;
     --gray-300:#D8DCE5;
@@ -25,8 +29,10 @@
     --card:#FFFFFF;
     --star:#FFB020;
     --radius:16px;
-    --shadow:0 2px 8px rgba(31,36,48,0.06), 0 1px 2px rgba(31,36,48,0.04);
-    --shadow-lg:0 12px 32px rgba(31,36,48,0.12);
+    --shadow:0 2px 8px rgba(6,40,48,0.08), 0 1px 2px rgba(6,40,48,0.05);
+    --shadow-lg:0 16px 40px rgba(4,30,38,0.22);
+    --glass-bg:rgba(255,255,255,0.68);
+    --glass-border:rgba(255,255,255,0.55);
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
@@ -504,6 +510,89 @@
   .toggle-switch.on{background:var(--secondary);}
   .toggle-switch .knob{width:18px;height:18px;border-radius:50%;background:#fff;position:absolute;top:3px;left:3px;transition:left .15s ease;box-shadow:var(--shadow);}
   .toggle-switch.on .knob{left:21px;}
+
+  /* ===========================================================
+     TEMA: gradiente turquesa + glassmorphism (fundo do sistema)
+     =========================================================== */
+  html{
+    background:linear-gradient(160deg, var(--turquoise-1) 0%, var(--turquoise-2) 45%, var(--turquoise-3) 78%, var(--turquoise-4) 100%);
+  }
+  body{
+    background:linear-gradient(160deg, var(--turquoise-1) 0%, var(--turquoise-2) 45%, var(--turquoise-3) 78%, var(--turquoise-4) 100%);
+    background-attachment:fixed;
+    min-height:100vh;
+  }
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+    background:radial-gradient(circle at 15% 8%, rgba(255,255,255,0.14), transparent 45%),
+               radial-gradient(circle at 88% 82%, rgba(255,122,56,0.12), transparent 40%);
+  }
+  .app{background:transparent;box-shadow:none;position:relative;z-index:1;}
+
+  /* Navegação e chrome com vidro fosco */
+  .topnav{background:rgba(255,255,255,0.6);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-bottom:1px solid rgba(255,255,255,0.4);}
+  .tabs{background:rgba(255,255,255,0.35);}
+  .tab-btn.active{background:var(--primary);box-shadow:0 6px 16px rgba(255,122,56,0.35);}
+  .mode-switch{background:rgba(255,255,255,0.35);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,0.4);}
+  .mode-btn.active{background:var(--primary);box-shadow:0 6px 16px rgba(255,122,56,0.35);}
+  .mode-caption{color:rgba(255,255,255,0.92);text-shadow:0 1px 6px rgba(0,0,0,0.15);}
+  .bottom-tabs{background:rgba(255,255,255,0.72);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-top:1px solid rgba(255,255,255,0.4);}
+  .bottom-tabs .tab-btn.active{background:rgba(255,122,56,0.16);color:var(--primary-dark);}
+
+  /* Superfícies em vidro fosco — todos os "cards" do sistema */
+  .card-block, .pro-card, .tool-card, .result-card, .step-card, .cat-card,
+  .stat-card, .booking-card, .request-card, .plan-card, .credit-pack,
+  .travel-card, .rank-card, .filters-panel, .stats-row, .product-row,
+  .pet-chip, .chip, .subnav-pill, .pstep, .avail-slot, .search-card,
+  .payout-card, .boost-card, .sub-banner{
+    background:var(--glass-bg) !important;
+    backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+    border-color:var(--glass-border) !important;
+  }
+  .payout-card, .boost-card, .sub-banner, .cta-banner, .credits-banner{
+    background:linear-gradient(120deg, rgba(8,59,73,0.82), rgba(12,124,147,0.82)) !important;
+    backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  }
+  .boost-card{background:linear-gradient(120deg, rgba(255,122,56,0.92), rgba(232,97,31,0.92)) !important;}
+  .plan-card.featured{background:linear-gradient(160deg, rgba(255,255,255,0.82), rgba(255,227,209,0.7)) !important;}
+  .tab-btn.active, .mode-btn.active, .chip.active, .subnav-pill.active, .ptype-btn.active,
+  .avail-slot.free, .status-pill.confirmed{background-color:var(--primary) !important;}
+  .chip.active, .subnav-pill.active{color:#fff !important;border-color:var(--primary) !important;}
+  .ptype-btn.active{background:rgba(255,122,56,0.16) !important;border-color:var(--primary) !important;color:var(--primary-dark) !important;}
+  .avail-slot.free{color:#fff !important;}
+  .pstep.done{background:rgba(14,165,183,0.24) !important;color:var(--secondary-dark) !important;}
+  .pstep.active{background:var(--primary) !important;color:#fff !important;}
+  .badge{background:rgba(14,165,183,0.18) !important;color:var(--secondary-dark) !important;}
+  .status-pill.confirmed{color:#fff !important;}
+
+  /* Texto solto diretamente sobre o gradiente (fora de cards) fica claro */
+  .section-head h2, .search-header h2, .search-header p.muted,
+  .dash-header h2, .dash-header p, .tools-header h2, .tools-header p,
+  .plan-intro h2, .plan-intro p, .results-top, .footer, .info-tag,
+  .tools-group h3, .subnav-pills + .subscreen h3, #agenda h3{
+    color:#fff !important;
+    text-shadow:0 1px 8px rgba(0,0,0,0.18);
+  }
+  .results-top .sort-select{color:var(--dark);text-shadow:none;}
+  .section-head .see-all{color:#fff !important;text-decoration:underline;}
+
+  /* Botões — laranja como cor de destaque/CTA em todo o sistema */
+  .btn-primary{background:var(--primary);box-shadow:0 8px 20px rgba(255,122,56,0.4);}
+  .btn-primary:hover{box-shadow:0 10px 26px rgba(255,122,56,0.48);}
+  .btn-secondary{background:var(--secondary-dark);}
+  .btn-outline{background:rgba(255,255,255,0.75);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);}
+  .see-all, .cat-card:hover{border-color:var(--primary) !important;}
+  .btn:disabled{background:rgba(255,255,255,0.5) !important;color:var(--gray-500) !important;box-shadow:none !important;}
+
+  /* Hero e landing seguem o mesmo tema turquesa + laranja */
+  .hero{background:linear-gradient(120deg, var(--turquoise-1) 0%, var(--turquoise-2) 45%, var(--primary) 130%);}
+  .landing-screen{background:linear-gradient(160deg, var(--turquoise-1) 0%, var(--turquoise-2) 45%, var(--turquoise-3) 78%, var(--turquoise-4) 100%);}
+  .landing-brand .paw-badge-lg, .brand .paw-badge{background:linear-gradient(135deg, var(--primary), var(--secondary-dark));}
+
+  /* Toasts de feedback */
+  #toast-container{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:2000;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none;}
+  .toast{background:rgba(14,46,54,0.94);color:#fff;padding:12px 20px;border-radius:100px;font-size:13.5px;font-weight:600;box-shadow:var(--shadow-lg);backdrop-filter:blur(10px);opacity:0;transform:translateY(10px);transition:all .25s ease;}
+  .toast.show{opacity:1;transform:translateY(0);}
 </style>
 </head>
 <body class="mode-consumidor landing-active">
@@ -852,7 +941,7 @@
         <span class="stars">★★★★★ 4.9 · 218 avaliações · Vila Mariana, SP</span>
       </div>
       <div class="profile-actions">
-        <button class="btn btn-outline">💬 Mensagem</button>
+        <button class="btn btn-outline" data-toast="Mensagem enviada (demonstração)">💬 Mensagem</button>
         <button class="btn btn-primary" data-goto="agenda">Agendar atendimento</button>
       </div>
     </div>
@@ -939,7 +1028,7 @@
     <div class="pets-row">
       <div class="pet-chip"><div class="pdot"><img src="https://images.pexels.com/photos/19143039/pexels-photo-19143039.jpeg?auto=compress&cs=tinysrgb&w=100" alt="Thor"></div> Thor · Cão · SRD</div>
       <div class="pet-chip"><div class="pdot"><img src="https://images.pexels.com/photos/13473569/pexels-photo-13473569.jpeg?auto=compress&cs=tinysrgb&w=100" alt="Mia"></div> Mia · Gata · Siamês</div>
-      <button class="chip add-pet">+ Adicionar pet</button>
+      <button class="chip add-pet" data-goto="perfil-pet">+ Adicionar pet</button>
     </div>
 
     <div class="subnav-pills">
@@ -1058,29 +1147,29 @@
             <div class="product-icon">🍖</div>
             <div class="product-info"><h4>Ração Premium Adulto 15kg</h4><div class="pmeta">Você compra a cada ~30 dias · última compra há 28 dias</div></div>
             <div class="product-price">R$ 189,90</div>
-            <button class="btn btn-primary btn-sm">Comprar</button>
+            <button class="btn btn-primary btn-sm" data-toast="Ração Premium adicionada ao carrinho (demonstração)">Comprar</button>
           </div>
           <div class="product-row">
             <div class="product-icon">💊</div>
             <div class="product-info"><h4>Cetoconazol (conforme receita)</h4><div class="pmeta">Prescrito por Dr. Lucas Barbosa em 02/07</div></div>
             <div class="product-price">R$ 42,00</div>
-            <button class="btn btn-primary btn-sm">Comprar</button>
+            <button class="btn btn-primary btn-sm" data-toast="Cetoconazol adicionado ao carrinho (demonstração)">Comprar</button>
           </div>
           <div class="product-row">
             <div class="product-icon">🧴</div>
             <div class="product-info"><h4>Shampoo hipoalergênico</h4><div class="pmeta">Recomendado após o banho de 12/07</div></div>
             <div class="product-price">R$ 38,00</div>
-            <button class="btn btn-outline btn-sm">Adicionar</button>
+            <button class="btn btn-outline btn-sm" data-toast="Shampoo hipoalergênico adicionado ao carrinho (demonstração)">Adicionar</button>
           </div>
           <div class="product-row">
             <div class="product-icon">🦴</div>
             <div class="product-info"><h4>Petisco dental</h4><div class="pmeta">Complementa a saúde bucal</div></div>
             <div class="product-price">R$ 24,90</div>
-            <button class="btn btn-outline btn-sm">Adicionar</button>
+            <button class="btn btn-outline btn-sm" data-toast="Petisco dental adicionado ao carrinho (demonstração)">Adicionar</button>
           </div>
           <div class="sub-banner">
             <div><h4>Assinatura Pet Connect+</h4><p>Receba a ração todo mês com 10% de desconto e frete grátis.</p></div>
-            <button class="btn btn-secondary btn-sm" style="background:#fff;color:var(--secondary-dark);">Assinar</button>
+            <button class="btn btn-secondary btn-sm" style="background:#fff;color:var(--secondary-dark);" data-toast="Assinatura Pet Connect+ simulada (demonstração)">Assinar</button>
           </div>
         </div>
       </div>
@@ -1097,22 +1186,22 @@
           <div class="travel-search">
             <input type="text" placeholder="Para onde vocês vão?" value="Campos do Jordão, SP">
             <input type="text" placeholder="Datas" value="14 a 17 de agosto">
-            <button class="btn btn-primary btn-sm">Buscar</button>
+            <button class="btn btn-primary btn-sm" data-toast="Buscando opções pet friendly em Campos do Jordão (demonstração)">Buscar</button>
           </div>
           <div class="travel-card">
             <div class="travel-icon">🏨</div>
             <div class="travel-info"><h4>Pousada Vista Verde</h4><div class="tmeta">🐾 Pet friendly · taxa única de R$ 50 · 4.7 ★</div></div>
-            <button class="btn btn-outline btn-sm">Ver</button>
+            <button class="btn btn-outline btn-sm" data-toast="Detalhes da Pousada Vista Verde (demonstração)">Ver</button>
           </div>
           <div class="travel-card">
             <div class="travel-icon">🍽️</div>
             <div class="travel-info"><h4>Restaurante Green Garden</h4><div class="tmeta">🐾 Área pet friendly · 4.6 ★</div></div>
-            <button class="btn btn-outline btn-sm">Ver</button>
+            <button class="btn btn-outline btn-sm" data-toast="Detalhes do Restaurante Green Garden (demonstração)">Ver</button>
           </div>
           <div class="travel-card">
             <div class="travel-icon">🚗</div>
             <div class="travel-info"><h4>Pet Táxi Express</h4><div class="tmeta">🐾 Transporte porta a porta · 4.9 ★</div></div>
-            <button class="btn btn-outline btn-sm">Ver</button>
+            <button class="btn btn-outline btn-sm" data-toast="Detalhes do Pet Táxi Express (demonstração)">Ver</button>
           </div>
           <div class="travel-note">📱 Apresente a carteira digital de Thor no check-in — sem precisar levar papel, mesmo em caso de emergência.</div>
         </div>
@@ -1185,7 +1274,7 @@
             <div class="service-row"><div><div class="sname">Passeio 30 min</div><div class="sdur">1 pet</div></div><div class="sprice">R$ 25</div></div>
             <div class="service-row"><div><div class="sname">Passeio 60 min</div><div class="sdur">até 2 pets</div></div><div class="sprice">R$ 35</div></div>
             <div class="service-row"><div><div class="sname">Hospedagem diária</div><div class="sdur">na casa do profissional</div></div><div class="sprice">R$ 80</div></div>
-            <button class="btn btn-outline btn-sm" style="margin-top:12px;">+ Adicionar serviço</button>
+            <button class="btn btn-outline btn-sm" style="margin-top:12px;" data-toast="Novo serviço adicionado à vitrine (demonstração)">+ Adicionar serviço</button>
           </div>
 
           <div class="card-block">
@@ -1326,7 +1415,7 @@
         <div class="boost-card">
           <h4>🚀 Impulsionar meu perfil</h4>
           <p>Apareça em destaque nas buscas por passeadores na sua região — a partir de R$ 29/semana.</p>
-          <button class="btn btn-block" style="background:#fff;color:var(--primary-dark);">Contratar destaque</button>
+          <button class="btn btn-block" style="background:#fff;color:var(--primary-dark);" data-goto="assinatura-pro">Contratar destaque</button>
         </div>
 
         <div class="card-block">
@@ -1387,7 +1476,7 @@
         <p class="muted" style="margin:4px 0 0;color:var(--gray-500);font-size:13px;">Tudo pra ajudar você a gerenciar e fazer crescer seu negócio pet</p>
       </div>
       <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-        <div class="tools-balance">🐾 750 Patinhas <span class="add-btn">+</span></div>
+        <div class="tools-balance">🐾 750 Patinhas <span class="add-btn" data-goto="assinatura-pro" style="cursor:pointer;">+</span></div>
         <input class="tools-search" type="text" placeholder="Pesquisar ferramenta">
       </div>
     </div>
@@ -1579,7 +1668,7 @@
           <li><span class="ico">✓</span> Selo "Parceiro Pro" no perfil</li>
           <li><span class="ico">✓</span> Diagnóstico do Negócio mensal automático</li>
         </ul>
-        <button class="btn btn-primary btn-block">Assinar Pro</button>
+        <button class="btn btn-primary btn-block" data-toast="Assinatura Pro simulada — pagamento não incluso neste protótipo">Assinar Pro</button>
       </div>
 
       <div class="plan-card">
@@ -1602,9 +1691,9 @@
     </div>
 
     <div class="credit-pack-row">
-      <div class="credit-pack"><div class="amt">🐾 200</div><div class="price">R$ 19,90</div><button class="btn btn-outline btn-sm btn-block">Comprar</button></div>
-      <div class="credit-pack"><div class="amt">🐾 500</div><div class="price">R$ 39,90</div><button class="btn btn-outline btn-sm btn-block">Comprar</button></div>
-      <div class="credit-pack"><div class="amt">🐾 1.200</div><div class="price">R$ 79,90</div><button class="btn btn-outline btn-sm btn-block">Comprar</button></div>
+      <div class="credit-pack"><div class="amt">🐾 200</div><div class="price">R$ 19,90</div><button class="btn btn-outline btn-sm btn-block" data-toast="Compra de 200 Patinhas simulada (demonstração)">Comprar</button></div>
+      <div class="credit-pack"><div class="amt">🐾 500</div><div class="price">R$ 39,90</div><button class="btn btn-outline btn-sm btn-block" data-toast="Compra de 500 Patinhas simulada (demonstração)">Comprar</button></div>
+      <div class="credit-pack"><div class="amt">🐾 1.200</div><div class="price">R$ 79,90</div><button class="btn btn-outline btn-sm btn-block" data-toast="Compra de 1.200 Patinhas simulada (demonstração)">Comprar</button></div>
     </div>
   </section>
 
@@ -1627,7 +1716,7 @@
     <div class="pet-switch-row">
       <button class="chip active pet-switch-btn" data-pet="thor">🐕 Thor</button>
       <button class="chip pet-switch-btn" data-pet="mia">🐈 Mia</button>
-      <button class="chip add-pet">+ Adicionar novo pet</button>
+      <button class="chip add-pet" data-toast="Cadastro de novo pet — em breve neste protótipo">+ Adicionar novo pet</button>
     </div>
 
     <div class="profile-body" style="grid-template-columns:1fr 300px;">
@@ -1646,7 +1735,7 @@
             <div class="form-field full"><label>Alergias e restrições</label><textarea>Nenhuma alergia registrada até o momento.</textarea></div>
             <div class="form-field full"><label>Medicações em uso</label><textarea>Nenhuma medicação contínua.</textarea></div>
           </div>
-          <button class="btn btn-primary" style="margin-top:18px;">Salvar dados do pet</button>
+          <button class="btn btn-primary" style="margin-top:18px;" data-toast="Dados do pet salvos (demonstração)">Salvar dados do pet</button>
         </div>
 
         <div class="card-block">
@@ -1672,7 +1761,7 @@
           <div class="privacy-row"><span>Permitir acesso via QR Code em emergências</span><div class="toggle-switch on"><div class="knob"></div></div></div>
           <div class="privacy-row"><span>Compartilhar histórico com novos parceiros automaticamente</span><div class="toggle-switch on"><div class="knob"></div></div></div>
           <div class="privacy-row"><span>Permitir que parceiros vejam alergias e restrições</span><div class="toggle-switch on"><div class="knob"></div></div></div>
-          <button class="btn btn-primary" style="margin-top:16px;">Salvar personalização</button>
+          <button class="btn btn-primary" style="margin-top:16px;" data-toast="Personalização da carteira salva (demonstração)">Salvar personalização</button>
         </div>
       </div>
 
@@ -1707,7 +1796,23 @@
 
 </div>
 
+<div id="toast-container"></div>
+
 <script>
+  function showToast(msg){
+    var container = document.getElementById('toast-container');
+    if(!container) return;
+    var t = document.createElement('div');
+    t.className = 'toast';
+    t.textContent = msg;
+    container.appendChild(t);
+    requestAnimationFrame(function(){ t.classList.add('show'); });
+    setTimeout(function(){
+      t.classList.remove('show');
+      setTimeout(function(){ t.remove(); }, 300);
+    }, 2600);
+  }
+
   function goTo(tabName){
     document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
     var target = document.getElementById(tabName);
@@ -1926,6 +2031,20 @@
   // Toggles de privacidade (visual)
   document.querySelectorAll('.toggle-switch').forEach(function(sw){
     sw.addEventListener('click', function(){ sw.classList.toggle('on'); });
+  });
+
+  // Feedback genérico (toast) para botões de ação que ainda não têm destino real
+  document.querySelectorAll('[data-toast]').forEach(function(el){
+    el.addEventListener('click', function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      showToast(el.getAttribute('data-toast'));
+    });
+  });
+
+  // Filtros da busca (chips) — alternam estado ativo
+  document.querySelectorAll('.filter-bar .chip').forEach(function(chip){
+    chip.addEventListener('click', function(){ chip.classList.toggle('active'); });
   });
 </script>
 </body>
