@@ -415,10 +415,64 @@
   .tool-body{padding:16px 18px 20px;}
   .tool-body h4{margin:0 0 7px;font-size:15px;}
   .tool-body p{margin:0;font-size:12px;color:var(--gray-500);line-height:1.6;}
+
+  /* Tela de entrada (seleção de perfil) */
+  body.landing-active .topnav,
+  body.landing-active .mode-bar,
+  body.landing-active .mode-caption,
+  body.landing-active .bottom-tabs{display:none !important;}
+
+  .landing-screen{
+    min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;position:relative;overflow:hidden;padding:40px 24px;
+    background:linear-gradient(135deg,#FF7A5A 0%,#FF6B4A 35%,#12A181 100%);
+  }
+  .landing-screen::before{content:"";position:absolute;top:-110px;left:-110px;width:320px;height:320px;background:rgba(255,255,255,0.12);border-radius:50%;}
+  .landing-screen::after{content:"";position:absolute;bottom:-130px;right:-90px;width:380px;height:380px;background:rgba(255,255,255,0.10);border-radius:50%;}
+  .landing-brand{position:relative;z-index:2;display:flex;align-items:center;gap:16px;margin-bottom:16px;}
+  .landing-brand .paw-badge-lg{width:64px;height:64px;border-radius:18px;background:rgba(255,255,255,0.18);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.35);display:flex;align-items:center;justify-content:center;font-size:32px;}
+  .landing-brand h1{color:#fff;font-size:34px;margin:0;font-weight:800;}
+  .landing-tagline{color:rgba(255,255,255,0.92);font-size:15px;max-width:480px;margin:0 0 46px;position:relative;z-index:2;line-height:1.65;}
+  .landing-cards{display:flex;gap:26px;flex-wrap:wrap;justify-content:center;position:relative;z-index:2;max-width:760px;}
+  .landing-card{
+    width:320px;background:rgba(255,255,255,0.14);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+    border:1px solid rgba(255,255,255,0.35);border-radius:24px;padding:34px 28px;color:#fff;text-align:left;
+    transition:all .2s ease;box-shadow:0 8px 32px rgba(0,0,0,0.12);cursor:pointer;
+  }
+  .landing-card:hover{background:rgba(255,255,255,0.24);transform:translateY(-6px);box-shadow:0 16px 40px rgba(0,0,0,0.2);}
+  .landing-card .lc-icon{width:56px;height:56px;border-radius:16px;background:rgba(255,255,255,0.18);border:1px solid rgba(255,255,255,0.32);display:flex;align-items:center;justify-content:center;font-size:26px;margin-bottom:18px;}
+  .landing-card h3{margin:0 0 8px;font-size:19px;font-weight:800;}
+  .landing-card p{margin:0 0 22px;font-size:13px;line-height:1.6;color:rgba(255,255,255,0.85);}
+  .landing-card .lc-cta{display:inline-flex;align-items:center;gap:6px;font-size:13.5px;font-weight:700;color:#fff;}
+  .landing-foot{position:relative;z-index:2;color:rgba(255,255,255,0.7);font-size:11.5px;margin-top:40px;}
+  @media (max-width:700px){.landing-cards{flex-direction:column;align-items:center;} .landing-card{width:100%;max-width:340px;}}
 </style>
 </head>
-<body class="mode-consumidor">
+<body class="mode-consumidor landing-active">
 <div class="app">
+
+  <section class="screen active landing-screen" id="landing">
+    <div class="landing-brand">
+      <span class="paw-badge-lg">🐾</span>
+      <h1>Pet Connect Hub</h1>
+    </div>
+    <p class="landing-tagline">A rede que conecta tutores e profissionais pet — veterinários, passeadores, banho &amp; tosa, pet shops e hotéis — em um só lugar.</p>
+    <div class="landing-cards">
+      <div class="landing-card" data-mode-goto="consumidor:home">
+        <div class="lc-icon">🧑‍🦱🐕</div>
+        <h3>Sou pai/mãe de pet</h3>
+        <p>Encontre, agende e cuide da saúde do seu pet com profissionais de confiança perto de você.</p>
+        <span class="lc-cta">Entrar como tutor →</span>
+      </div>
+      <div class="landing-card" data-mode-goto="profissional:cadastro-pro">
+        <div class="lc-icon">💼🐾</div>
+        <h3>Sou parceiro</h3>
+        <p>Veterinário, pet shop, hotel ou profissional autônomo? Gerencie seu negócio e receba novos clientes.</p>
+        <span class="lc-cta">Entrar como parceiro →</span>
+      </div>
+    </div>
+    <p class="landing-foot">Protótipo acadêmico ESPM · 2026</p>
+  </section>
 
   <nav class="topnav">
     <div class="brand"><span class="paw-badge">🐾</span> Pet Connect Hub</div>
@@ -461,6 +515,7 @@
       </div>
     </div>
     <div class="nav-actions">
+      <a class="btn-ghost" href="#" id="switch-profile-link">🔁 Trocar perfil</a>
       <a class="btn-ghost" href="#" data-mode-goto="profissional:cadastro-pro">Sou parceiro</a>
       <div class="avatar-mini">PR</div>
     </div>
@@ -475,7 +530,7 @@
   <p class="mode-caption" id="mode-caption">Você está vendo a jornada de quem busca e contrata um serviço pet.</p>
 
   <!-- ===== SCREEN: HOME ===== -->
-  <section class="screen active" id="home">
+  <section class="screen" id="home">
     <div class="hero">
       <div class="hero-flex">
         <div class="hero-text">
@@ -1504,11 +1559,21 @@
   document.querySelectorAll('[data-mode-goto]').forEach(function(el){
     el.addEventListener('click', function(e){
       e.preventDefault();
+      document.body.classList.remove('landing-active');
       var parts = el.getAttribute('data-mode-goto').split(':');
       setMode(parts[0]);
       goTo(parts[1]);
     });
   });
+
+  var switchProfileLink = document.getElementById('switch-profile-link');
+  if(switchProfileLink){
+    switchProfileLink.addEventListener('click', function(e){
+      e.preventDefault();
+      document.body.classList.add('landing-active');
+      goTo('landing');
+    });
+  }
 
   document.querySelectorAll('.toggle-avail').forEach(function(el){
     el.addEventListener('click', function(){ el.classList.toggle('free'); });
